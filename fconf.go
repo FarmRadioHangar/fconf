@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 
 	"github.com/coreos/go-systemd/unit"
@@ -194,4 +195,14 @@ func wifiClient(ctx *cli.Context) error {
 	}
 	fmt.Printf("successful written wifi configuration to %s \n", filename)
 	return nil
+}
+
+func wifiConfig(username, password string) (string, error) {
+	cmd := "/usr/bin/wpa_passphrase"
+	firstLine := "ctrl_interface=/run/wpa_supplicant_fconf"
+	o, err := exec.Command(cmd, username, password).Output()
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%s \n \n%s\n", firstLine, string(o)), nil
 }
