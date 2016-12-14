@@ -185,6 +185,7 @@ func wifiClient(ctx *cli.Context) error {
 	name := ctx.String("name")
 	src := ctx.Args().First()
 	restart := ctx.BoolT("restart")
+	connect := ctx.BoolT("connect")
 	if src == "" {
 		return errors.New("fconf: missing argument")
 	}
@@ -207,6 +208,33 @@ func wifiClient(ctx *cli.Context) error {
 		return err
 	}
 	fmt.Printf("successful written wifi configuration to %s \n", filename)
+	if connect {
+		path := "/etc/wpa_supplicant/"
+		err = checkDir(path)
+		if err != nil {
+			return err
+		}
+		if e.Interface == "" {
+			e.Interface = "wlan0"
+		}
+		cname := "wpa_supplicant-" + e.Interface + ".conf"
+		s, err := wifiConfig(e.Username, e.Password)
+		if err != nil {
+			return err
+		}
+		err = ioutil.WriteFile(filepath.Join(path, cname), []byte(s), 0644)
+		if err != nil {
+			return err
+		}
+		err = enableService("wpa_supplicant@wlan0")
+		if err != nil {
+			return err
+		}
+		err = restartService("wpa_supplicant@wlan0")
+		if err != nil {
+			return err
+		}
+	}
 	if restart {
 		return restartService("systemd-networkd")
 	}
@@ -226,6 +254,12 @@ func wifiConfig(username, password string) (string, error) {
 func restartService(name string) error {
 	fmt.Print("restarting ", name, "...")
 	_, err := exec.Command("systemctl", "restart", name).Output()
+	fmt.Println("done")
+	return err
+}
+func enableService(name string) error {
+	fmt.Print("enabling ", name, "...")
+	_, err := exec.Command("systemctl", "enable", name).Output()
 	fmt.Println("done")
 	return err
 }
