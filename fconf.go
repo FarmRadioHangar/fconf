@@ -25,6 +25,13 @@ type Ethernet struct {
 	Network
 }
 
+func (e Ethernet) ToSystemdUnit() ([]*unit.UnitOption, error) {
+	if e.Interface == "" {
+		e.Interface = "eth0"
+	}
+	return e.Network.ToSystemdUnit()
+}
+
 //Wifi is the wifi configuration.
 type Wifi struct {
 	Network
@@ -39,7 +46,7 @@ type UnitFile interface {
 
 func (w Wifi) ToSystemdUnit() ([]*unit.UnitOption, error) {
 	if w.Interface == "" {
-		w.Network.Interface = "wlan0"
+		w.Interface = "wlan0"
 	}
 	return w.Network.ToSystemdUnit()
 }
