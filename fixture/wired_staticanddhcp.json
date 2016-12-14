@@ -1,0 +1,1 @@
+{"static":{"ip":"192.168.1.8/24","gateway":"192.168.1.1"},"dhcp":true,"dns-servers":["8.8.8.8","8.8.8.8"],"interface":"eth0"}

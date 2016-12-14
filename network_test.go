@@ -9,7 +9,7 @@ import (
 )
 
 func TestNetwork_ToSystemdUnit(t *testing.T) {
-	e := &Network{
+	e := Network{
 		Static: &Static{
 			IP:      "192.168.1.8/24",
 			Gateway: "192.168.1.1",
@@ -62,5 +62,4 @@ func TestNetwork_ToSystemdUnit(t *testing.T) {
 	if !bytes.Equal(exp, o) {
 		t.Errorf("expected \n %s \n Got \n %s", string(exp), string(o))
 	}
-
 }

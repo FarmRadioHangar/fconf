@@ -26,7 +26,7 @@ type Network struct {
 }
 
 //ToSystemdUnit transforms the Network object to systemd unit file.
-func (e *Network) ToSystemdUnit() ([]*unit.UnitOption, error) {
+func (e Network) ToSystemdUnit() ([]*unit.UnitOption, error) {
 	var result []*unit.UnitOption
 	// network interface
 	i := &unit.UnitOption{
