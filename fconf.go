@@ -95,6 +95,10 @@ func main() {
 					Usage: "The directory in which to write the file",
 					Value: networkBase,
 				},
+				cli.BoolTFlag{
+					Name:  "restart",
+					Usage: "restarts the network service",
+				},
 			},
 			Action: ethernet,
 		},
@@ -113,6 +117,10 @@ func main() {
 					Usage: "The directory in which to write the file",
 					Value: networkBase,
 				},
+				cli.BoolTFlag{
+					Name:  "restart",
+					Usage: "restarts the network service",
+				},
 			},
 			Action: wifiClient,
 		},
@@ -127,6 +135,7 @@ func ethernet(ctx *cli.Context) error {
 	base := ctx.String("dir")
 	name := ctx.String("name")
 	src := ctx.Args().First()
+	restart := ctx.BoolT("restart")
 	if src == "" {
 		return errors.New("fconf: missing argument")
 	}
@@ -149,6 +158,9 @@ func ethernet(ctx *cli.Context) error {
 		return err
 	}
 	fmt.Printf("successful written ethernet configuration to %s \n", filename)
+	if restart {
+		return restartService("systemd-networkd")
+	}
 	return nil
 }
 
@@ -172,6 +184,7 @@ func wifiClient(ctx *cli.Context) error {
 	base := ctx.String("dir")
 	name := ctx.String("name")
 	src := ctx.Args().First()
+	restart := ctx.BoolT("restart")
 	if src == "" {
 		return errors.New("fconf: missing argument")
 	}
@@ -194,6 +207,9 @@ func wifiClient(ctx *cli.Context) error {
 		return err
 	}
 	fmt.Printf("successful written wifi configuration to %s \n", filename)
+	if restart {
+		return restartService("systemd-networkd")
+	}
 	return nil
 }
 
@@ -205,4 +221,11 @@ func wifiConfig(username, password string) (string, error) {
 		return "", err
 	}
 	return fmt.Sprintf("%s \n \n%s\n", firstLine, string(o)), nil
+}
+
+func restartService(name string) error {
+	fmt.Print("restarting ", name, "...")
+	_, err := exec.Command("systemctl", "restart", name).Output()
+	fmt.Println("done")
+	return err
 }
