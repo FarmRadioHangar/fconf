@@ -9,6 +9,7 @@ files.
 You can install precompiled binaries
 
 Or if you have Go installed.
+
 	go get github.com/FarmRadioHangar/fconf
 
 ## Usage
