@@ -51,6 +51,7 @@ func LoadAPFromSrc(src []byte) (*AccessPoint, error) {
 	return a, nil
 }
 
+//WriteTo writes ini representation of *AccessPoint to dst.
 func (a *AccessPoint) WriteTo(dst io.Writer) (int64, error) {
 	f := ini.Empty()
 	err := f.ReflectFrom(a)
