@@ -25,6 +25,7 @@ type Ethernet struct {
 	Network
 }
 
+//ToSystemdUnit implement UnitFile interface
 func (e Ethernet) ToSystemdUnit() ([]*unit.UnitOption, error) {
 	if e.Interface == "" {
 		e.Interface = "eth0"
@@ -44,6 +45,7 @@ type UnitFile interface {
 	ToSystemdUnit() ([]*unit.UnitOption, error)
 }
 
+//ToSystemdUnit implement UnitFile interface
 func (w Wifi) ToSystemdUnit() ([]*unit.UnitOption, error) {
 	if w.Interface == "" {
 		w.Interface = "wlan0"
