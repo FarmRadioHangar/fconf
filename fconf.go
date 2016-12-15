@@ -19,7 +19,7 @@ const (
 	networkBase       = "/etc/systemd/network"
 	ethernetService   = "wired.service"
 	wirelessService   = "wireless.service"
-	accessPointConfig = "/etc/create_ap.conf"
+	accessPointConfig = "create_ap.conf"
 )
 
 //Ethernet is the ehternet configuration.
