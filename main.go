@@ -54,6 +54,10 @@ func main() {
 					Name:  "restart",
 					Usage: "restarts the network service",
 				},
+				cli.BoolTFlag{
+					Name:  "connect",
+					Usage: "generates and starts service for wifi connection",
+				},
 			},
 			Action: wifiClient,
 		},
