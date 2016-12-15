@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -15,9 +16,10 @@ import (
 )
 
 const (
-	networkBase     = "/etc/systemd/network"
-	ethernetService = "wired.service"
-	wirelessService = "wireless.service"
+	networkBase       = "/etc/systemd/network"
+	ethernetService   = "wired.service"
+	wirelessService   = "wireless.service"
+	accessPointConfig = "/etc/create_ap.conf"
 )
 
 //Ethernet is the ehternet configuration.
@@ -206,4 +208,42 @@ func enableService(name string) error {
 	_, err := exec.Command("systemctl", "enable", name).Output()
 	fmt.Println("done")
 	return err
+}
+
+func accessPoint(ctx *cli.Context) error {
+	base := ctx.String("dir")
+	name := ctx.String("name")
+	src := ctx.Args().First()
+	restart := ctx.BoolT("restart")
+	if src == "" {
+		return errors.New("fconf: missing argument")
+	}
+	b, err := ioutil.ReadFile(src)
+	if err != nil {
+		return err
+	}
+	e := &AccessPoint{}
+	err = json.Unmarshal(b, e)
+	if err != nil {
+		return err
+	}
+	err = checkDir(base)
+	if err != nil {
+		return err
+	}
+	filename := filepath.Join(base, name)
+	var buf bytes.Buffer
+	_, err = e.WriteTo(&buf)
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(filename, buf.Bytes(), 0644)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("successful written access point configuration to %s \n", filename)
+	if restart {
+		return restartService("create_ap")
+	}
+	return nil
 }
