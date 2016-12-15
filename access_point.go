@@ -8,33 +8,33 @@ import (
 
 //AccessPoint  is the access point configuration
 type AccessPoint struct {
-	Channel         string `ini:"CHANNEL"`
-	Gateway         string `ini:"GATEWAY"`
-	WPAVersion      int    `ini:"WPA_VERSION"`
-	ETCHosts        int    `ini:"ETC_HOSTS"`
-	DHCPDNS         string `ini:"DHCP_DNS"`
-	NoDNS           int    `ini:"NO_DNS"`
-	Hidden          int    `ini:"HIDDEN"`
-	MACFilter       int    `ini:"MAC_FILTER"`
-	MACFilterAccept string `ini:"MAC_FILTER_ACCEPT"`
-	IsolateClients  int    `ini:"ISOLATE_CLIENTS"`
-	ShareMethod     string `ini:"SHARE_METHOD"`
+	Channel         string `ini:"CHANNEL" json:"channel"`
+	Gateway         string `ini:"GATEWAY" json:"gateway"`
+	WPAVersion      int    `ini:"WPA_VERSION" json:"wpa_version"`
+	ETCHosts        int    `ini:"ETC_HOSTS" json:"etc_hosts"`
+	DHCPDNS         string `ini:"DHCP_DNS" json:"dhcp_dns"`
+	NoDNS           int    `ini:"NO_DNS" json:"no_dns"`
+	Hidden          int    `ini:"HIDDEN" json:"hidden"`
+	MACFilter       int    `ini:"MAC_FILTER" json:"mac_filter"`
+	MACFilterAccept string `ini:"MAC_FILTER_ACCEPT" json:"mac-filter_accept"`
+	IsolateClients  int    `ini:"ISOLATE_CLIENTS" json:"isolate_clients"`
+	ShareMethod     string `ini:"SHARE_METHOD" json:"share_method"`
 	IEEE80211N      int
 	IEEE80211AC     int
-	HTCapAb         string  `ini:"HT_CAPAB"`
-	VHTCapAb        string  `ini:"VHT_CAPAB"`
-	Driver          string  `ini:"DRIVER"`
-	NoVirt          int     `ini:"NO_VIRT"`
-	Country         string  `ini:"COUNTRY"`
-	FreqBand        float64 `ini:"FREQ_BAND"`
-	NewMACAddr      string  `ini:"NEW_MACADDR"`
-	Daemonize       int     `ini:"DAEMONIZE"`
-	NoHaveGED       int     `ini:"NO_HAVEGED"`
-	WifiIface       string  `ini:"WIFI_IFACE"`
-	InternetIface   string  `ini:"INTERNET_IFACE"`
-	SSID            string  `ini:"SSID"`
-	Passptrase      string  `ini:"PASSPHRASE"`
-	UsePsk          int     `ini:"USE_PSK"`
+	HTCapAb         string  `ini:"HT_CAPAB" json:"ht_capab"`
+	VHTCapAb        string  `ini:"VHT_CAPAB" json:"vht_capab"`
+	Driver          string  `ini:"DRIVER" json:"driver"`
+	NoVirt          int     `ini:"NO_VIRT" json:"no_virt"`
+	Country         string  `ini:"COUNTRY" json:"country"`
+	FreqBand        float64 `ini:"FREQ_BAND" json:"freq_band"`
+	NewMACAddr      string  `ini:"NEW_MACADDR" json:"new_macaddr"`
+	Daemonize       int     `ini:"DAEMONIZE" json:"daemonize"`
+	NoHaveGED       int     `ini:"NO_HAVEGED" json:"no_haveged"`
+	WifiIface       string  `ini:"WIFI_IFACE" json:"wifi_interface"`
+	InternetIface   string  `ini:"INTERNET_IFACE" json:"internet_interface"`
+	SSID            string  `ini:"SSID" json:"ssid"`
+	Passptrase      string  `ini:"PASSPHRASE" json:"passphrase"`
+	UsePsk          int     `ini:"USE_PSK" json:"use_psk"`
 }
 
 //LoadAPFromSrc loads access point configuration fom [byte
