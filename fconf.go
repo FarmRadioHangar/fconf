@@ -17,8 +17,8 @@ import (
 
 const (
 	networkBase       = "/etc/systemd/network"
-	ethernetService   = "wired.service"
-	wirelessService   = "wireless.service"
+	ethernetService   = "wired.network"
+	wirelessService   = "wireless.network"
 	accessPointConfig = "create_ap.conf"
 )
 
