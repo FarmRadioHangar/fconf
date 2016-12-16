@@ -118,7 +118,7 @@ This is a sample content of the json configuration file for wifi client
    ],
    "interface":"wlan0",
    "username":"HackME",
-   "password":"mypassworld"
+   "ssid":"mypassworld"
 }
 ```
 

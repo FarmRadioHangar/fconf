@@ -38,7 +38,7 @@ func (e Ethernet) ToSystemdUnit() ([]*unit.UnitOption, error) {
 //Wifi is the wifi configuration.
 type Wifi struct {
 	Network
-	Username string `json:"username"`
+	Username string `json:"ssid"`
 	Password string `json:"password"`
 }
 
