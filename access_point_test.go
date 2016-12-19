@@ -2,6 +2,8 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"testing"
 )
@@ -20,4 +22,10 @@ func TestLoadAPFromSrc(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	j, err := json.MarshalIndent(a, "", "\t")
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println(string(j))
+	ioutil.WriteFile("fixture/create_ap.json", j, 0644)
 }
