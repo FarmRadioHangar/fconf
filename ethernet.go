@@ -19,6 +19,9 @@ func EthernetCMD(ctx *cli.Context) error {
 	if ctx.IsSet(configFlag) {
 		return configEthernetCMD(ctx)
 	}
+	if ctx.IsSet(disableFlag) {
+		return DisableEthernet(ctx)
+	}
 	return nil
 }
 
@@ -105,4 +108,18 @@ func keepState(filename string, src []byte) error {
 		return err
 	}
 	return ioutil.WriteFile(filepath.Join(dir, filename), src, 0644)
+}
+
+//DisableEthernet disables ethernet temporaly.
+func DisableEthernet(ctx *cli.Context) error {
+	e, err := ethernetState()
+	if err != nil {
+		return err
+	}
+	_, err = exec.Command("ip", "link", "set", "down", "dev", e.Interface).Output()
+	if err != nil {
+		return err
+	}
+	fmt.Println("successfully disabled ethernet")
+	return nil
 }
