@@ -16,11 +16,14 @@ func EthernetCMD(ctx *cli.Context) error {
 	if ctx.IsSet(enableFlag) {
 		return EnableEthernet(ctx)
 	}
-	if ctx.IsSet(configFlag) {
-		return configEthernetCMD(ctx)
-	}
 	if ctx.IsSet(disableFlag) {
 		return DisableEthernet(ctx)
+	}
+	if ctx.IsSet(removeFlag) {
+		return RemoveEthernet(ctx)
+	}
+	if ctx.IsSet(configFlag) {
+		return configEthernetCMD(ctx)
 	}
 	return nil
 }
@@ -122,4 +125,47 @@ func DisableEthernet(ctx *cli.Context) error {
 	}
 	fmt.Println("successfully disabled ethernet")
 	return nil
+}
+
+//RemoveEthernet removes ethernet service.
+func RemoveEthernet(ctx *cli.Context) error {
+	err := DisableEthernet(ctx)
+	if err != nil {
+		return err
+	}
+
+	// removestate file
+	stateFile := filepath.Join(stateDir(), defaultEthernetConfig)
+	err = removeFile(stateFile)
+	if err != nil {
+		return err
+	}
+	// remove systemd file
+	unit := filepath.Join(networkBase, ethernetService)
+	err = removeFile(unit)
+	if err != nil {
+		return err
+	}
+
+	// reload systemd-networkd
+	return restartService("systemd-networkd")
+}
+
+func removeFile(name string) error {
+	fmt.Printf("removing %s ...", name)
+	err := os.Remove(name)
+	if err != nil {
+		fmt.Println(" error")
+		return err
+	}
+	fmt.Println(" done without error")
+	return nil
+}
+
+func stateDir() string {
+	dir := os.Getenv("FCONF_CONFIGDIR")
+	if dir == "" {
+		dir = fconfConfigDir
+	}
+	return dir
 }

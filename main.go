@@ -13,7 +13,7 @@ const (
 
 func main() {
 	app := cli.NewApp()
-	app.Version = "0.1.4"
+	app.Version = "0.1.5"
 	app.Name = "fconf"
 	app.Usage = "fessbox configuration manager"
 	app.Commands = []cli.Command{
@@ -40,6 +40,14 @@ func main() {
 				cli.BoolFlag{
 					Name:  "enable",
 					Usage: "Enables ethernet",
+				},
+				cli.BoolFlag{
+					Name:  "disable",
+					Usage: "Disable ethernet",
+				},
+				cli.BoolFlag{
+					Name:  "remove",
+					Usage: "Remove ethernet",
 				},
 			},
 			Action: EthernetCMD,
