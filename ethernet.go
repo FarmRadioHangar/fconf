@@ -100,5 +100,9 @@ func keepState(filename string, src []byte) error {
 	if dir == "" {
 		dir = fconfConfigDir
 	}
+	err := checkDir(dir)
+	if err != nil {
+		return err
+	}
 	return ioutil.WriteFile(filepath.Join(dir, filename), src, 0644)
 }
