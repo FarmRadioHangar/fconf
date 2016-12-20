@@ -111,7 +111,7 @@ func configWifiClient(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("successful written wifi connection  configuration to %s \n", cname)
+	fmt.Printf("successful written wifi connection  configuration to %s \n", filepath.Join(path, cname))
 	return keepState(defaultWifiClientConfig, b)
 }
 
