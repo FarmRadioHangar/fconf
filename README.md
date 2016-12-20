@@ -123,8 +123,8 @@ This is a sample content of the json configuration file for wifi client
       "8.8.8.8"
    ],
    "interface":"wlan0",
-   "username":"HackME",
-   "ssid":"mypassworld"
+   "ssid":"HackME",
+   "password":"mypassworld"
 }
 ```
 
