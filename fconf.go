@@ -103,6 +103,17 @@ func restartService(name string) error {
 	return nil
 }
 
+func startService(name string) error {
+	fmt.Print("starting ", name, "...")
+	_, err := exec.Command("systemctl", "start", name).Output()
+	if err != nil {
+		fmt.Println("done with error")
+		return err
+	}
+	fmt.Println("done without error")
+	return nil
+}
+
 func enableService(name string) error {
 	fmt.Print("enabling ", name, "...")
 	_, err := exec.Command("systemctl", "enable", name).Output()
