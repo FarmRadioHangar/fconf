@@ -14,21 +14,19 @@ Or if you have Go installed.
 
 ## Usage
 ```
-
 NAME:
    fconf - fessbox configuration manager
 
 USAGE:
    fconf [global options] command [command options] [arguments...]
-
+   
 VERSION:
-   0.1.0
-
+   0.2.1
+   
 COMMANDS:
-     ethernet, e       configures ethernet with systemd
-     wifi-client, w    configures wifi client with systemd
-     access-point, ap  configures access point with systemd
-     help, h           Shows a list of commands or help for one command
+     ethernet, e     configures ethernet with systemd
+     wifi-client, w  configures wifi client with systemd
+     help, h         Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
    --help, -h     show help
@@ -39,6 +37,7 @@ GLOBAL OPTIONS:
 # Network Configuration
 
 ## Ethernet
+
 ```
 NAME:
    fconf ethernet - configures ethernet with systemd
@@ -47,17 +46,22 @@ USAGE:
    fconf ethernet [command options] [arguments...]
 
 OPTIONS:
-   --name value  The name of the unit file (default: "wired.service")
-   --dir value   The directory in which to write the file (default: "/etc/systemd/network")
-   --restart     restarts the network service
+   --name value    The name of the unit file (default: "fconf-wired.network")
+   --dir value     The directory in which to write the file (default: "/etc/systemd/network")
+   --config value  The path to the json configuration file (default: "wired.json")
+   --enable        Enables ethernet
+   --disable       Disable ethernet
+   --remove        Remove ethernet
 ```
+
 
 You need to supply  the json file with the Ethernet configuration as the
 first argument.
 
+
 Example
 
-	fconf e fixture/wired_static.json
+	fconf e --config=fixture/wired_static.json
 
 This is a sample content of the json configuration file for Ethernet
 
@@ -90,10 +94,12 @@ USAGE:
    fconf wifi-client [command options] [arguments...]
 
 OPTIONS:
-   --name value  The name of the unit file (default: "wireless.service")
-   --dir value   The directory in which to write the file (default: "/etc/systemd/network")
-   --restart     restarts the network service
-   --connect     generates and starts service for wifi connection
+   --name value    The name of the unit file (default: "fconf-wireless.network")
+   --dir value     The directory in which to write the file (default: "/etc/systemd/network")
+   --config value  The path to the json configuration file (default: "wireless.json")
+   --enable        Enables wifi
+   --disable       Disable wifi
+   --remove        Remove wifi
 ```
 
 This shares the same configuration as for Ethernet, except you can add
@@ -101,7 +107,7 @@ username(ssid) and password for the wifi network.
 
 Example
 
-	fconf e fixture/wireless.json
+	fconf e --config=fixture/wireless.json
 
 This is a sample content of the json configuration file for wifi client
 
