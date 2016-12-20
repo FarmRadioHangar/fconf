@@ -35,8 +35,11 @@ func EnableWifiClient(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
+	if w.Interface == "" {
+		w.Interface = "wlan0"
+	}
 	service := "wpa_supplicant@" + w.Interface
-	err = startService(service)
+	err = restartService(service)
 	if err != nil {
 		return err
 	}
@@ -53,7 +56,7 @@ func wifiClientState() (*Wifi, error) {
 	if dir == "" {
 		dir = fconfConfigDir
 	}
-	b, err := ioutil.ReadFile(filepath.Join(dir, defaultEthernetConfig))
+	b, err := ioutil.ReadFile(filepath.Join(dir, defaultWifiClientConfig))
 	if err != nil {
 		return nil, err
 	}
@@ -108,16 +111,8 @@ func configWifiClient(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	service := "wpa_supplicant@" + e.Interface
-	err = enableService(service)
-	if err != nil {
-		return err
-	}
-	err = restartService(service)
-	if err != nil {
-		return err
-	}
-	return nil
+	fmt.Printf("successful written wifi connection  configuration to %s \n", cname)
+	return keepState(defaultWifiClientConfig, b)
 }
 
 func wifiConfig(username, password string) (string, error) {

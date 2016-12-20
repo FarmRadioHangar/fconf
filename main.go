@@ -8,12 +8,13 @@ import (
 )
 
 const (
-	defaultEthernetConfig = "wired.json"
+	defaultEthernetConfig   = "wired.json"
+	defaultWifiClientConfig = "wireless.json"
 )
 
 func main() {
 	app := cli.NewApp()
-	app.Version = "0.1.5"
+	app.Version = "0.2.0"
 	app.Name = "fconf"
 	app.Usage = "fessbox configuration manager"
 	app.Commands = []cli.Command{
@@ -60,7 +61,7 @@ func main() {
 				cli.StringFlag{
 					Name:  "name",
 					Usage: "The name of the unit file",
-					Value: ethernetService,
+					Value: wirelessService,
 				},
 				cli.StringFlag{
 					Name:  "dir",
@@ -70,7 +71,7 @@ func main() {
 				cli.StringFlag{
 					Name:  "config",
 					Usage: "The path to the json configuration file",
-					Value: defaultEthernetConfig,
+					Value: defaultWifiClientConfig,
 				},
 				cli.BoolFlag{
 					Name:  "enable",
