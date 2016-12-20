@@ -124,3 +124,24 @@ func enableService(name string) error {
 	fmt.Println("done without error")
 	return nil
 }
+func disableService(name string) error {
+	fmt.Print("disabling ", name, "...")
+	_, err := exec.Command("systemctl", "disable", name).Output()
+	if err != nil {
+		fmt.Println("done with error")
+		return err
+	}
+	fmt.Println("done without error")
+	return nil
+}
+
+func stopService(name string) error {
+	fmt.Print("disabling ", name, "...")
+	_, err := exec.Command("systemctl", "stop", name).Output()
+	if err != nil {
+		fmt.Println("done with error")
+		return err
+	}
+	fmt.Println("done without error")
+	return nil
+}
