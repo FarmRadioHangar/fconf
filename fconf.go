@@ -93,30 +93,27 @@ func checkDir(dir string) error {
 }
 
 func restartService(name string) error {
-	fmt.Print("restarting ", name, "...")
-	_, err := exec.Command("systemctl", "restart", name).Output()
-	if err != nil {
-		fmt.Println("done with error")
-		return err
-	}
-	fmt.Println("done without error")
-	return nil
+	return systemdCMD("restart", name)
 }
 
 func startService(name string) error {
-	fmt.Print("starting ", name, "...")
-	_, err := exec.Command("systemctl", "start", name).Output()
-	if err != nil {
-		fmt.Println("done with error")
-		return err
-	}
-	fmt.Println("done without error")
-	return nil
+	return systemdCMD("start", name)
 }
 
 func enableService(name string) error {
-	fmt.Print("enabling ", name, "...")
-	_, err := exec.Command("systemctl", "enable", name).Output()
+	return systemdCMD("enable", name)
+}
+func disableService(name string) error {
+	return systemdCMD("disable", name)
+}
+
+func stopService(name string) error {
+	return systemdCMD("stop", name)
+}
+
+func systemdCMD(name, service string) error {
+	fmt.Printf("%s %s ...", name, service)
+	_, err := exec.Command("systemctl", name, service).Output()
 	if err != nil {
 		fmt.Println("done with error")
 		return err

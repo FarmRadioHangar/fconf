@@ -16,6 +16,12 @@ func WifiClientCMD(ctx *cli.Context) error {
 	if ctx.IsSet(enableFlag) {
 		return EnableWifiClient(ctx)
 	}
+	if ctx.IsSet(disableFlag) {
+		return DisableWifi(ctx)
+	}
+	if ctx.IsSet(removeFlag) {
+		return RemoveWifi(ctx)
+	}
 	if ctx.IsSet(configFlag) {
 		return configWifiClient(ctx)
 	}
@@ -111,7 +117,7 @@ func configWifiClient(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("successful written wifi connection  configuration to %s \n", cname)
+	fmt.Printf("successful written wifi connection  configuration to %s \n", filepath.Join(path, cname))
 	return keepState(defaultWifiClientConfig, b)
 }
 
@@ -123,4 +129,58 @@ func wifiConfig(username, password string) (string, error) {
 		return "", err
 	}
 	return fmt.Sprintf("%s \n \n%s\n", firstLine, string(o)), nil
+}
+
+func DisableWifi(ctx *cli.Context) error {
+	w, err := wifiClientState()
+	if err != nil {
+		return err
+	}
+	if w.Interface == "" {
+		w.Interface = "wlan0"
+	}
+
+	service := "wpa_supplicant@" + w.Interface
+	err = disableService(service)
+	if err != nil {
+		return err
+	}
+	err = stopService(service)
+	if err != nil {
+		return err
+	}
+	return restartService("systemd-networkd")
+}
+
+func RemoveWifi(ctx *cli.Context) error {
+	w, err := wifiClientState()
+	if err != nil {
+		return err
+	}
+	if w.Interface == "" {
+		w.Interface = "wlan0"
+	}
+
+	// remove systemd file
+	unit := filepath.Join(networkBase, wirelessService)
+	err = removeFile(unit)
+	if err != nil {
+		return err
+	}
+	path := "/etc/wpa_supplicant/"
+	cname := "wpa_supplicant-" + w.Interface + ".conf"
+
+	// remove client connection
+	err = removeFile(filepath.Join(path, cname))
+	if err != nil {
+		return err
+	}
+	err = DisableWifi(ctx)
+	if err != nil {
+		return err
+	}
+
+	// remove the state file
+	stateFile := filepath.Join(stateDir(), defaultWifiClientConfig)
+	return removeFile(stateFile)
 }
