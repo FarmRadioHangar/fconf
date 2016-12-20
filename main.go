@@ -52,6 +52,41 @@ func main() {
 			},
 			Action: EthernetCMD,
 		},
+		{
+			Name:    "wifi-client",
+			Aliases: []string{"w"},
+			Usage:   "configures wifi client with systemd",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "name",
+					Usage: "The name of the unit file",
+					Value: ethernetService,
+				},
+				cli.StringFlag{
+					Name:  "dir",
+					Usage: "The directory in which to write the file",
+					Value: networkBase,
+				},
+				cli.StringFlag{
+					Name:  "config",
+					Usage: "The path to the json configuration file",
+					Value: defaultEthernetConfig,
+				},
+				cli.BoolFlag{
+					Name:  "enable",
+					Usage: "Enables wifi",
+				},
+				cli.BoolFlag{
+					Name:  "disable",
+					Usage: "Disable wifi",
+				},
+				cli.BoolFlag{
+					Name:  "remove",
+					Usage: "Remove wifi",
+				},
+			},
+			Action: WifiClientCMD,
+		},
 	}
 	err := app.Run(os.Args)
 	if err != nil {

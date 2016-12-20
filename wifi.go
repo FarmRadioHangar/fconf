@@ -1,0 +1,131 @@
+package main
+
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"os/exec"
+	"path/filepath"
+
+	"github.com/urfave/cli"
+)
+
+func WifiClientCMD(ctx *cli.Context) error {
+	if ctx.IsSet(enableFlag) {
+		return EnableWifiClient(ctx)
+	}
+	if ctx.IsSet(configFlag) {
+		return configWifiClient(ctx)
+	}
+	return nil
+}
+
+//EnableWifiClient enables wifi client. If the config flag is set, wifi is
+//configured before being enabled.
+func EnableWifiClient(ctx *cli.Context) error {
+	if ctx.IsSet(configFlag) {
+		err := configWifiClient(ctx)
+		if err != nil {
+			return err
+		}
+	}
+	w, err := wifiClientState()
+	if err != nil {
+		return err
+	}
+	service := "wpa_supplicant@" + w.Interface
+	err = startService(service)
+	if err != nil {
+		return err
+	}
+	err = enableService(service)
+	if err != nil {
+		return err
+	}
+	return restartService("systemd-networkd")
+
+}
+
+func wifiClientState() (*Wifi, error) {
+	dir := os.Getenv("FCONF_CONFIGDIR")
+	if dir == "" {
+		dir = fconfConfigDir
+	}
+	b, err := ioutil.ReadFile(filepath.Join(dir, defaultEthernetConfig))
+	if err != nil {
+		return nil, err
+	}
+	w := &Wifi{}
+	err = json.Unmarshal(b, w)
+	if err != nil {
+		return nil, err
+	}
+	return w, nil
+}
+
+func configWifiClient(ctx *cli.Context) error {
+	base := ctx.String("dir")
+	name := ctx.String("name")
+	src := ctx.String("config")
+	if src == "" {
+		return errors.New("fconf: missing configuration source file")
+	}
+	b, err := ioutil.ReadFile(src)
+	if err != nil {
+		return err
+	}
+	e := Wifi{}
+	err = json.Unmarshal(b, &e)
+	if err != nil {
+		return err
+	}
+	err = checkDir(base)
+	if err != nil {
+		return err
+	}
+	filename := filepath.Join(base, name)
+	err = CreateSystemdFile(e, filename, 0644)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("successful written wifi configuration to %s \n", filename)
+	path := "/etc/wpa_supplicant/"
+	err = checkDir(path)
+	if err != nil {
+		return err
+	}
+	if e.Interface == "" {
+		e.Interface = "wlan0"
+	}
+	cname := "wpa_supplicant-" + e.Interface + ".conf"
+	s, err := wifiConfig(e.Username, e.Password)
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(filepath.Join(path, cname), []byte(s), 0644)
+	if err != nil {
+		return err
+	}
+	service := "wpa_supplicant@" + e.Interface
+	err = enableService(service)
+	if err != nil {
+		return err
+	}
+	err = restartService(service)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func wifiConfig(username, password string) (string, error) {
+	cmd := "/usr/bin/wpa_passphrase"
+	firstLine := "ctrl_interface=/run/wpa_supplicant_fconf"
+	o, err := exec.Command(cmd, username, password).Output()
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%s \n \n%s\n", firstLine, string(o)), nil
+}
