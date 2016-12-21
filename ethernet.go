@@ -69,6 +69,9 @@ func ethernetState() (*Ethernet, error) {
 	if err != nil {
 		return nil, err
 	}
+	if e.Interface == "" {
+		e.Interface = "eth0"
+	}
 	return e, nil
 }
 
