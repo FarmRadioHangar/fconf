@@ -156,32 +156,12 @@ This is a sample content of the json configuration file for access point
 
 ```json
 {
-	"channel": "default",
-	"gateway": "10.0.0.1",
-	"wpa_version": 2,
-	"etc_hosts": 0,
-	"dhcp_dns": "gateway",
-	"no_dns": 0,
-	"hidden": 0,
-	"mac_filter": 0,
-	"mac-filter_accept": "/etc/hostapd/hostapd.accept",
-	"isolate_clients": 0,
-	"share_method": "nat",
-	"IEEE80211N": 0,
-	"IEEE80211AC": 0,
-	"ht_capab": "[HT40+]",
-	"vht_capab": "",
-	"driver": "nl80211",
-	"no_virt": 0,
-	"country": "",
-	"freq_band": 2.4,
-	"new_macaddr": "",
-	"daemonize": 0,
-	"no_haveged": 0,
-	"wifi_interface": "wlan0",
-	"internet_interface": "eth0",
-	"ssid": "MyAccessPoint",
-	"passphrase": "12345678",
-	"use_psk": 0
+	"interface": "wlan0",
+	"hidden": false,
+	"channel": 0,
+	"ssid": "voxbox",
+	"passphrase": "voxbox99",
+	"gateway": "192.168.12.1",
+	"shared_interface": "eth0"
 }
 ```
