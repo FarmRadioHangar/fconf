@@ -39,7 +39,7 @@ func ConfigApCMD(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	e := &AccessPoint{}
+	e := &AccessPointConfig{}
 	err = json.Unmarshal(b, e)
 	if err != nil {
 		return err
@@ -48,9 +48,11 @@ func ConfigApCMD(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
+	ap := DefaultAccesPoint()
+	ap.Update(e)
 	filename := filepath.Join(base, name)
 	var buf bytes.Buffer
-	_, err = e.WriteTo(&buf)
+	_, err = ap.WriteTo(&buf)
 	if err != nil {
 		return err
 	}
@@ -59,14 +61,15 @@ func ConfigApCMD(ctx *cli.Context) error {
 		return err
 	}
 	fmt.Printf("successful written access point configuration to %s \n", filename)
-	data, err := json.Marshal(e)
+	data, err := json.Marshal(ap.State())
 	if err != nil {
 		return err
 	}
+
 	return keepState(defaultAccessPointConfig, data)
 }
 
-func accessPointState() (*AccessPoint, error) {
+func accessPointState() (*AccessPointConfig, error) {
 	dir := os.Getenv("FCONF_CONFIGDIR")
 	if dir == "" {
 		dir = fconfConfigDir
@@ -75,7 +78,7 @@ func accessPointState() (*AccessPoint, error) {
 	if err != nil {
 		return nil, err
 	}
-	a := &AccessPoint{}
+	a := &AccessPointConfig{}
 	err = json.Unmarshal(b, a)
 	if err != nil {
 		return nil, err

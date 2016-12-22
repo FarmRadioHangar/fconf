@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
+	"strconv"
 
 	ini "gopkg.in/ini.v1"
 )
@@ -35,7 +37,7 @@ type AccessPoint struct {
 	WifiIface       string  `ini:"WIFI_IFACE" json:"wifi_interface"`
 	InternetIface   string  `ini:"INTERNET_IFACE" json:"internet_interface"`
 	SSID            string  `ini:"SSID" json:"ssid"`
-	Passptrase      string  `ini:"PASSPHRASE" json:"passphrase"`
+	Passphrase      string  `ini:"PASSPHRASE" json:"passphrase"`
 	UsePsk          int     `ini:"USE_PSK" json:"use_psk"`
 }
 
@@ -54,11 +56,13 @@ func LoadAPFromConf(src []byte) (*AccessPoint, error) {
 }
 
 func LoadFromJSON(src []byte) (*AccessPoint, error) {
-	a := &AccessPoint{}
-	err := json.Unmarshal(src, a)
+	a := DefaultAccesPoint()
+	ap := &AccessPointConfig{}
+	err := json.Unmarshal(src, ap)
 	if err != nil {
 		return nil, err
 	}
+	a.Update(ap)
 	return a, nil
 }
 
@@ -78,4 +82,100 @@ func (a *AccessPoint) WriteTo(dst io.Writer) (int64, error) {
 		}
 	}
 	return 0, nil
+}
+
+type AccessPointConfig struct {
+	Interface      string `json:"interface"`
+	Hidden         bool   `json:"hidden"`
+	Channel        int    `json:"channel"`
+	SSID           string `json:"ssid"`
+	Passphrase     string `json:"passphrase"`
+	Gateway        string `json:"gateway"`
+	ShareInterfaec string `json:"shared_interface"`
+}
+
+func (a *AccessPoint) Update(ap *AccessPointConfig) {
+	if ap.ShareInterfaec != "" {
+		a.ShareMethod = "nat"
+		a.InternetIface = ap.ShareInterfaec
+	} else {
+		a.ShareMethod = "none"
+		a.InternetIface = ""
+	}
+	if ap.SSID != "" {
+		a.SSID = ap.SSID
+		a.Passphrase = ap.Passphrase
+	}
+	if ap.Gateway != "" {
+		a.Gateway = ap.Gateway
+	}
+	if ap.Channel > 0 {
+		a.Channel = fmt.Sprint(ap.Channel)
+	}
+	if ap.Hidden {
+		a.Hidden = 1
+	} else {
+		a.Hidden = 0
+	}
+	if ap.Interface != "" {
+		a.WifiIface = ap.Interface
+	}
+}
+
+func DefaultAccesPoint() *AccessPoint {
+	var txt = `
+{
+	"channel": "default",
+	"gateway": "192.168.12.1",
+	"wpa_version": 2,
+	"etc_hosts": 0,
+	"dhcp_dns": "gateway",
+	"no_dns": 0,
+	"hidden": 0,
+	"mac_filter": 0,
+	"mac-filter_accept": "/etc/hostapd/hostapd.accept",
+	"isolate_clients": 1,
+	"share_method": "nat",
+	"IEEE80211N": 0,
+	"IEEE80211AC": 0,
+	"ht_capab": "[HT40+]",
+	"vht_capab": "",
+	"driver": "nl80211",
+	"no_virt": 1,
+	"country": "",
+	"freq_band": 2.4,
+	"new_macaddr": "",
+	"daemonize": 0,
+	"no_haveged": 0,
+	"wifi_interface": "wlan0",
+	"internet_interface": "eth0",
+	"ssid": "voxbox",
+	"passphrase": "voxbox99",
+	"use_psk": 0
+}
+	`
+	a := &AccessPoint{}
+	_ = json.Unmarshal([]byte(txt), a)
+	return a
+}
+
+func (a *AccessPoint) State() *AccessPointConfig {
+	ap := &AccessPointConfig{
+		SSID:           a.SSID,
+		Passphrase:     a.Passphrase,
+		Gateway:        a.Gateway,
+		Interface:      a.WifiIface,
+		ShareInterfaec: a.InternetIface,
+	}
+	if a.Hidden == 1 {
+		ap.Hidden = true
+	}
+	if a.Channel != "" && a.Channel != "default" {
+		i, err := strconv.Atoi(a.Channel)
+		if err != nil {
+			log.Fatal(err)
+		}
+		ap.Channel = i
+	}
+	return ap
 }
