@@ -130,6 +130,6 @@ func RemoveApCMD(ctx *cli.Context) error {
 	}
 
 	// remove the state file
-	stateFile := filepath.Join(stateDir(), defaultWifiClientConfig)
+	stateFile := filepath.Join(stateDir(), defaultAccessPointConfig)
 	return removeFile(stateFile)
 }

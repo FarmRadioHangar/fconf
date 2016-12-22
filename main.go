@@ -15,7 +15,7 @@ const (
 
 func main() {
 	app := cli.NewApp()
-	app.Version = "0.3.0"
+	app.Version = "0.3.1"
 	app.Name = "fconf"
 	app.Usage = "fessbox configuration manager"
 	app.Commands = []cli.Command{
