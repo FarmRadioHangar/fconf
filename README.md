@@ -21,16 +21,18 @@ USAGE:
    fconf [global options] command [command options] [arguments...]
    
 VERSION:
-   0.2.1
+   0.3.2
    
 COMMANDS:
-     ethernet, e     configures ethernet with systemd
-     wifi-client, w  configures wifi client with systemd
-     help, h         Shows a list of commands or help for one command
+     ethernet, e      configures ethernet with systemd
+     wifi-client, w   configures wifi client with systemd
+     access-point, a  configures access point with systemd
+     help, h          Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
    --help, -h     show help
    --version, -v  print the version
+   
 ```
 
 
