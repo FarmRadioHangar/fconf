@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"io"
 
 	ini "gopkg.in/ini.v1"
@@ -24,7 +26,7 @@ type AccessPoint struct {
 	HTCapAb         string  `ini:"HT_CAPAB" json:"ht_capab"`
 	VHTCapAb        string  `ini:"VHT_CAPAB" json:"vht_capab"`
 	Driver          string  `ini:"DRIVER" json:"driver"`
-	NoVirt          int     `ini:"NO_VIRT" json:"no_virt"`
+	NoVirt          int     `ini:"NO_VIRT" json:"no_virt,omitempty"`
 	Country         string  `ini:"COUNTRY" json:"country"`
 	FreqBand        float64 `ini:"FREQ_BAND" json:"freq_band"`
 	NewMACAddr      string  `ini:"NEW_MACADDR" json:"new_macaddr"`
@@ -38,13 +40,22 @@ type AccessPoint struct {
 }
 
 //LoadAPFromSrc loads access point configuration fom [byte
-func LoadAPFromSrc(src []byte) (*AccessPoint, error) {
+func LoadAPFromConf(src []byte) (*AccessPoint, error) {
 	cfg, err := ini.Load(src)
 	if err != nil {
 		return nil, err
 	}
 	a := &AccessPoint{}
 	err = cfg.MapTo(a)
+	if err != nil {
+		return nil, err
+	}
+	return a, nil
+}
+
+func LoadFromJSON(src []byte) (*AccessPoint, error) {
+	a := &AccessPoint{}
+	err := json.Unmarshal(src, a)
 	if err != nil {
 		return nil, err
 	}
@@ -58,5 +69,13 @@ func (a *AccessPoint) WriteTo(dst io.Writer) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	return f.WriteTo(dst)
+	s := f.Sections()
+	for _, sec := range s {
+		names := sec.KeyStrings()
+		for _, n := range names {
+			v := sec.Key(n).String()
+			fmt.Fprintf(dst, "%s=%s\n", n, v)
+		}
+	}
+	return 0, nil
 }

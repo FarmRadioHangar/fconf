@@ -8,8 +8,9 @@ import (
 )
 
 const (
-	defaultEthernetConfig   = "wired.json"
-	defaultWifiClientConfig = "wireless.json"
+	defaultEthernetConfig    = "wired.json"
+	defaultWifiClientConfig  = "wireless.json"
+	defaultAccessPointConfig = "access_point.json"
 )
 
 func main() {
@@ -87,6 +88,41 @@ func main() {
 				},
 			},
 			Action: WifiClientCMD,
+		},
+		{
+			Name:    "access-point",
+			Aliases: []string{"a"},
+			Usage:   "configures access point with systemd",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "name",
+					Usage: "The name of the unit file",
+					Value: apConfigFile,
+				},
+				cli.StringFlag{
+					Name:  "dir",
+					Usage: "The directory in which to write the file",
+					Value: networkBase,
+				},
+				cli.StringFlag{
+					Name:  "config",
+					Usage: "The path to the json configuration file",
+					Value: defaultAccessPointConfig,
+				},
+				cli.BoolFlag{
+					Name:  "enable",
+					Usage: "Enables wifi",
+				},
+				cli.BoolFlag{
+					Name:  "disable",
+					Usage: "Disable wifi",
+				},
+				cli.BoolFlag{
+					Name:  "remove",
+					Usage: "Remove wifi",
+				},
+			},
+			Action: ApCMD,
 		},
 	}
 	err := app.Run(os.Args)

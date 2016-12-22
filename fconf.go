@@ -11,8 +11,10 @@ import (
 
 const (
 	networkBase       = "/etc/systemd/network"
+	apConfigBase      = "/etc/"
 	ethernetService   = "fconf-wired.network"
 	wirelessService   = "fconf-wireless.network"
+	apConfigFile      = "create_ap.conf"
 	accessPointConfig = "create_ap.conf"
 	enableFlag        = "enable"
 	disableFlag       = "disable"

@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"testing"
+
+	"github.com/kr/pretty"
 )
 
 func TestLoadAPFromSrc(t *testing.T) {
@@ -13,7 +15,7 @@ func TestLoadAPFromSrc(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	a, err := LoadAPFromSrc(b)
+	a, err := LoadAPFromConf(b)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -28,4 +30,15 @@ func TestLoadAPFromSrc(t *testing.T) {
 	}
 	fmt.Println(string(j))
 	ioutil.WriteFile("fixture/create_ap.json", j, 0644)
+
+	b, err = ioutil.ReadFile("fixture/create_ap.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	a, err = LoadFromJSON(b)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	pretty.Println(a)
 }
