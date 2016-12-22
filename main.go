@@ -102,7 +102,7 @@ func main() {
 				cli.StringFlag{
 					Name:  "dir",
 					Usage: "The directory in which to write the file",
-					Value: networkBase,
+					Value: apConfigBase,
 				},
 				cli.StringFlag{
 					Name:  "config",
