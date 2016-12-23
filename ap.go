@@ -93,7 +93,7 @@ func EnableApCMD(ctx *cli.Context) error {
 			return err
 		}
 	}
-	_, err := accessPointState()
+	state, err := accessPointState()
 	if err != nil {
 		return err
 	}
@@ -102,11 +102,20 @@ func EnableApCMD(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	return enableService(service)
+	err = enableService(service)
+	if err != nil {
+		return err
+	}
+	state.Enabled = true
+	data, err := json.Marshal(state)
+	if err != nil {
+		return err
+	}
+	return keepState(defaultAccessPointConfig, data)
 }
 
 func DisableApCMD(ctx *cli.Context) error {
-	_, err := accessPointState()
+	state, err := accessPointState()
 	if err != nil {
 		return err
 	}
@@ -115,7 +124,15 @@ func DisableApCMD(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	return disableService(service)
+	err = disableService(service)
+	if err != nil {
+		return err
+	}
+	data, err := json.Marshal(state)
+	if err != nil {
+		return err
+	}
+	return keepState(defaultAccessPointConfig, data)
 }
 func RemoveApCMD(ctx *cli.Context) error {
 	_, err := accessPointState()
