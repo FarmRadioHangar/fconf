@@ -128,6 +128,7 @@ func DisableApCMD(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
+	state.Enabled = false
 	data, err := json.Marshal(state)
 	if err != nil {
 		return err
