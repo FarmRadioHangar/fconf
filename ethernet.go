@@ -48,7 +48,16 @@ func EnableEthernet(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	return restartService("systemd-networkd")
+	err = restartService("systemd-networkd")
+	if err != nil {
+		return err
+	}
+	e.Enabled = true
+	data, err := json.Marshal(e)
+	if err != nil {
+		return err
+	}
+	return keepState(defaultEthernetConfig, data)
 }
 
 // gives the current state of the ethernet configuration. This will return an
@@ -127,7 +136,12 @@ func DisableEthernet(ctx *cli.Context) error {
 		return err
 	}
 	fmt.Println("successfully disabled ethernet")
-	return nil
+	e.Enabled = false
+	data, err := json.Marshal(e)
+	if err != nil {
+		return err
+	}
+	return keepState(defaultEthernetConfig, data)
 }
 
 //RemoveEthernet removes ethernet service.
