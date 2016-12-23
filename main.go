@@ -11,7 +11,7 @@ const (
 	defaultEthernetConfig    = "wired.json"
 	defaultWifiClientConfig  = "wireless.json"
 	defaultAccessPointConfig = "access_point.json"
-	defaultFougGConfig       = "four_g.json"
+	defaultFougGConfig       = "4g.json"
 )
 
 func main() {
