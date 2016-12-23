@@ -53,7 +53,16 @@ func EnableWifiClient(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	return restartService("systemd-networkd")
+	err = restartService("systemd-networkd")
+	if err != nil {
+		return err
+	}
+	w.Enabled = true
+	data, err := json.Marshal(w)
+	if err != nil {
+		return err
+	}
+	return keepState(defaultWifiClientConfig, data)
 
 }
 
@@ -149,7 +158,16 @@ func DisableWifi(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	return restartService("systemd-networkd")
+	err = restartService("systemd-networkd")
+	if err != nil {
+		return err
+	}
+	w.Enabled = true
+	data, err := json.Marshal(w)
+	if err != nil {
+		return err
+	}
+	return keepState(defaultWifiClientConfig, data)
 }
 
 func RemoveWifi(ctx *cli.Context) error {

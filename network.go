@@ -23,6 +23,7 @@ type Network struct {
 	DHCP      bool     `json:"dhcp"`
 	DNS       []string `json:"dns-servers"`
 	Interface string   `json:"interface"`
+	Enabled   bool     `json:"enabled"`
 }
 
 //ToSystemdUnit transforms the Network object to systemd unit file.
