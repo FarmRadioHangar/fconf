@@ -11,6 +11,7 @@ const (
 	defaultEthernetConfig    = "wired.json"
 	defaultWifiClientConfig  = "wireless.json"
 	defaultAccessPointConfig = "access_point.json"
+	defaultFougGConfig       = "four_g.json"
 )
 
 func main() {
@@ -53,6 +54,41 @@ func main() {
 				},
 			},
 			Action: EthernetCMD,
+		},
+		{
+			Name:    "4g",
+			Aliases: []string{"g"},
+			Usage:   "configures 4G with systemd",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "name",
+					Usage: "The name of the unit file",
+					Value: fourgService,
+				},
+				cli.StringFlag{
+					Name:  "dir",
+					Usage: "The directory in which to write the file",
+					Value: networkBase,
+				},
+				cli.StringFlag{
+					Name:  "config",
+					Usage: "The path to the json configuration file",
+					Value: defaultFougGConfig,
+				},
+				cli.BoolFlag{
+					Name:  "enable",
+					Usage: "Enables 4G",
+				},
+				cli.BoolFlag{
+					Name:  "disable",
+					Usage: "Disable 4G",
+				},
+				cli.BoolFlag{
+					Name:  "remove",
+					Usage: "Remove 4G",
+				},
+			},
+			Action: FourgCMD,
 		},
 		{
 			Name:    "wifi-client",
@@ -111,15 +147,15 @@ func main() {
 				},
 				cli.BoolFlag{
 					Name:  "enable",
-					Usage: "Enables wifi",
+					Usage: "Enables access point",
 				},
 				cli.BoolFlag{
 					Name:  "disable",
-					Usage: "Disable wifi",
+					Usage: "Disable access point",
 				},
 				cli.BoolFlag{
 					Name:  "remove",
-					Usage: "Remove wifi",
+					Usage: "Remove access point",
 				},
 			},
 			Action: ApCMD,

@@ -13,6 +13,7 @@ const (
 	networkBase       = "/etc/systemd/network"
 	apConfigBase      = "/etc/"
 	ethernetService   = "fconf-wired.network"
+	fourgService      = "fconf-4g.network"
 	wirelessService   = "fconf-wireless.network"
 	apConfigFile      = "create_ap.conf"
 	accessPointConfig = "create_ap.conf"
