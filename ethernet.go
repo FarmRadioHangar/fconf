@@ -12,6 +12,11 @@ import (
 	"github.com/urfave/cli"
 )
 
+type EthernetState struct {
+	Enabled bool      `json:"enabled"`
+	Configg *Ethernet `json:"config"`
+}
+
 func EthernetCMD(ctx *cli.Context) error {
 	if ctx.IsSet(enableFlag) {
 		return EnableEthernet(ctx)
@@ -44,7 +49,7 @@ func EnableEthernet(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	_, err = exec.Command("ip", "link", "set", "up", e.Interface).Output()
+	_, err = exec.Command("ip", "link", "set", "up", e.Configg.Interface).Output()
 	if err != nil {
 		return err
 	}
@@ -64,7 +69,7 @@ func EnableEthernet(ctx *cli.Context) error {
 // error if the system hast been configured yet.
 //
 // Configuration state files are written in $FCONF_CONFIGDIR directory.
-func ethernetState() (*Ethernet, error) {
+func ethernetState() (*EthernetState, error) {
 	dir := os.Getenv("FCONF_CONFIGDIR")
 	if dir == "" {
 		dir = fconfConfigDir
@@ -73,13 +78,13 @@ func ethernetState() (*Ethernet, error) {
 	if err != nil {
 		return nil, err
 	}
-	e := &Ethernet{}
+	e := &EthernetState{}
 	err = json.Unmarshal(b, e)
 	if err != nil {
 		return nil, err
 	}
-	if e.Interface == "" {
-		e.Interface = "eth0"
+	if e.Configg.Interface == "" {
+		e.Configg.Interface = "eth0"
 	}
 	return e, nil
 }
@@ -119,6 +124,8 @@ func configEthernetCMD(ctx *cli.Context) error {
 		return err
 	}
 	fmt.Printf("successful written ethernet configuration to %s \n", filename)
+	state := &EthernetState{Configg: &e}
+	b, _ = json.Marshal(state)
 	return keepState(defaultEthernetConfig, b)
 }
 
@@ -140,7 +147,7 @@ func DisableEthernet(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	_, err = exec.Command("ip", "link", "set", "down", "dev", e.Interface).Output()
+	_, err = exec.Command("ip", "link", "set", "down", "dev", e.Configg.Interface).Output()
 	if err != nil {
 		return err
 	}

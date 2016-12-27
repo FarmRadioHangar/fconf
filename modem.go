@@ -13,6 +13,11 @@ import (
 	"github.com/urfave/cli"
 )
 
+type FourGState struct {
+	Enabled bool   `json:"enabled"`
+	Configg *FourG `json:"config"`
+}
+
 type FourG struct {
 	Network
 }
@@ -25,7 +30,7 @@ func (f FourG) ToSystemdUnit() ([]*unit.UnitOption, error) {
 	return f.Network.ToSystemdUnit()
 }
 
-func fourGState() (*FourG, error) {
+func fourGState() (*FourGState, error) {
 	dir := os.Getenv("FCONF_CONFIGDIR")
 	if dir == "" {
 		dir = fconfConfigDir
@@ -34,13 +39,13 @@ func fourGState() (*FourG, error) {
 	if err != nil {
 		return nil, err
 	}
-	f := &FourG{}
+	f := &FourGState{}
 	err = json.Unmarshal(b, f)
 	if err != nil {
 		return nil, err
 	}
-	if f.Interface == "" {
-		f.Interface = "eth1"
+	if f.Configg.Interface == "" {
+		f.Configg.Interface = "eth1"
 	}
 	return f, nil
 }
@@ -93,7 +98,7 @@ func EnableFourg(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	_, err = exec.Command("ip", "link", "set", "up", e.Interface).Output()
+	_, err = exec.Command("ip", "link", "set", "up", e.Configg.Interface).Output()
 	if err != nil {
 		return err
 	}
@@ -114,7 +119,7 @@ func DisableFourg(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	_, err = exec.Command("ip", "link", "set", "down", "dev", e.Interface).Output()
+	_, err = exec.Command("ip", "link", "set", "down", "dev", e.Configg.Interface).Output()
 	if err != nil {
 		return err
 	}
@@ -162,5 +167,7 @@ func configFourgCMD(ctx *cli.Context) error {
 		return err
 	}
 	fmt.Printf("successful written 4G configuration to %s \n", filename)
+	state := &FourGState{Configg: &e}
+	b, _ = json.Marshal(state)
 	return keepState(defaultFougGConfig, b)
 }

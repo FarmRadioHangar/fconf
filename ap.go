@@ -12,6 +12,11 @@ import (
 	"github.com/urfave/cli"
 )
 
+type AccessPointState struct {
+	Enabled bool               `json:"enabled"`
+	Configg *AccessPointConfig `json:"config"`
+}
+
 func ApCMD(ctx *cli.Context) error {
 	if ctx.IsSet(enableFlag) {
 		return EnableApCMD(ctx)
@@ -70,15 +75,15 @@ func ConfigApCMD(ctx *cli.Context) error {
 		return err
 	}
 	fmt.Printf("successful written access point configuration to %s \n", filename)
-	data, err := json.Marshal(ap.State())
+	state := &AccessPointState{Configg: ap.State()}
+	data, err := json.Marshal(state)
 	if err != nil {
 		return err
 	}
-
 	return keepState(defaultAccessPointConfig, data)
 }
 
-func accessPointState() (*AccessPointConfig, error) {
+func accessPointState() (*AccessPointState, error) {
 	dir := os.Getenv("FCONF_CONFIGDIR")
 	if dir == "" {
 		dir = fconfConfigDir
@@ -87,7 +92,7 @@ func accessPointState() (*AccessPointConfig, error) {
 	if err != nil {
 		return nil, err
 	}
-	a := &AccessPointConfig{}
+	a := &AccessPointState{}
 	err = json.Unmarshal(b, a)
 	if err != nil {
 		return nil, err

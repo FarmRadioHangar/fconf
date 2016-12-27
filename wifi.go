@@ -13,8 +13,8 @@ import (
 )
 
 type WifiState struct {
-	Enabled bool `json:"enabled"`
-	Configg Wifi `json:"config"`
+	Enabled bool  `json:"enabled"`
+	Configg *Wifi `json:"config"`
 }
 
 func WifiClientCMD(ctx *cli.Context) error {
@@ -46,10 +46,10 @@ func EnableWifiClient(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	if w.Interface == "" {
-		w.Interface = "wlan0"
+	if w.Configg.Interface == "" {
+		w.Configg.Interface = "wlan0"
 	}
-	service := "wpa_supplicant@" + w.Interface
+	service := "wpa_supplicant@" + w.Configg.Interface
 	err = restartService(service)
 	if err != nil {
 		return err
@@ -71,7 +71,7 @@ func EnableWifiClient(ctx *cli.Context) error {
 
 }
 
-func wifiClientState() (*Wifi, error) {
+func wifiClientState() (*WifiState, error) {
 	dir := os.Getenv("FCONF_CONFIGDIR")
 	if dir == "" {
 		dir = fconfConfigDir
@@ -80,7 +80,7 @@ func wifiClientState() (*Wifi, error) {
 	if err != nil {
 		return nil, err
 	}
-	w := &Wifi{}
+	w := &WifiState{}
 	err = json.Unmarshal(b, w)
 	if err != nil {
 		return nil, err
@@ -140,6 +140,8 @@ func configWifiClient(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
+	state := &WifiState{Configg: &e}
+	b, _ = json.Marshal(state)
 	fmt.Printf("successful written wifi connection  configuration to %s \n", filepath.Join(path, cname))
 	return keepState(defaultWifiClientConfig, b)
 }
@@ -159,11 +161,11 @@ func DisableWifi(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	if w.Interface == "" {
-		w.Interface = "wlan0"
+	if w.Configg.Interface == "" {
+		w.Configg.Interface = "wlan0"
 	}
 
-	service := "wpa_supplicant@" + w.Interface
+	service := "wpa_supplicant@" + w.Configg.Interface
 	err = disableService(service)
 	if err != nil {
 		return err
@@ -189,8 +191,8 @@ func RemoveWifi(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	if w.Interface == "" {
-		w.Interface = "wlan0"
+	if w.Configg.Interface == "" {
+		w.Configg.Interface = "wlan0"
 	}
 
 	// remove systemd file
@@ -200,7 +202,7 @@ func RemoveWifi(ctx *cli.Context) error {
 		return err
 	}
 	path := "/etc/wpa_supplicant/"
-	cname := "wpa_supplicant-" + w.Interface + ".conf"
+	cname := "wpa_supplicant-" + w.Configg.Interface + ".conf"
 
 	// remove client connection
 	err = removeFile(filepath.Join(path, cname))
