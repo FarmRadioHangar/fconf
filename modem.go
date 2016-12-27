@@ -101,7 +101,7 @@ func EnableFourg(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	e.Enabled = true
+	//e.Enabled = true
 	data, err := json.Marshal(e)
 	if err != nil {
 		return err
@@ -119,7 +119,7 @@ func DisableFourg(ctx *cli.Context) error {
 		return err
 	}
 	fmt.Println("successfully disabled 4G")
-	e.Enabled = false
+	//e.Enabled = false
 	data, err := json.Marshal(e)
 	if err != nil {
 		return err

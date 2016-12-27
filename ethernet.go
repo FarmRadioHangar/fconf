@@ -52,7 +52,7 @@ func EnableEthernet(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	e.Enabled = true
+	//e.Enabled = true
 	data, err := json.Marshal(e)
 	if err != nil {
 		return err
@@ -145,7 +145,7 @@ func DisableEthernet(ctx *cli.Context) error {
 		return err
 	}
 	fmt.Println("successfully disabled ethernet")
-	e.Enabled = false
+	//e.Enabled = false
 	data, err := json.Marshal(e)
 	if err != nil {
 		return err

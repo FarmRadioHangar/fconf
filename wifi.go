@@ -12,6 +12,11 @@ import (
 	"github.com/urfave/cli"
 )
 
+type WifiState struct {
+	Enabled bool `json:"enabled"`
+	Configg Wifi `json:"config"`
+}
+
 func WifiClientCMD(ctx *cli.Context) error {
 	if ctx.IsSet(enableFlag) {
 		return EnableWifiClient(ctx)
@@ -57,7 +62,7 @@ func EnableWifiClient(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	w.Enabled = true
+	//w.Enabled = true
 	data, err := json.Marshal(w)
 	if err != nil {
 		return err
@@ -171,7 +176,7 @@ func DisableWifi(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	w.Enabled = false
+	//w.Enabled = false
 	data, err := json.Marshal(w)
 	if err != nil {
 		return err
