@@ -1,4 +1,4 @@
-VERSION=0.4.0
+VERSION=0.4.1
 NAME=fconf_$(VERSION)
 OUT_DIR=bin/linux_arm/fconf_$(VERSION)
 
