@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"os"
@@ -123,4 +124,9 @@ func systemdCMD(name, service string) error {
 	}
 	fmt.Println("done without error")
 	return nil
+}
+
+func ReadFromStdin() ([]byte, error) {
+	r := bufio.NewReader(os.Stdin)
+	return r.ReadBytes('\n')
 }

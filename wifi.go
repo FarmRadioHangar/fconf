@@ -90,9 +90,18 @@ func configWifiClient(ctx *cli.Context) error {
 	if src == "" {
 		return errors.New("fconf: missing configuration source file")
 	}
-	b, err := ioutil.ReadFile(src)
-	if err != nil {
-		return err
+	var b []byte
+	var err error
+	if src == "stdin" {
+		b, err = ReadFromStdin()
+		if err != nil {
+			return err
+		}
+	} else {
+		b, err = ioutil.ReadFile(src)
+		if err != nil {
+			return err
+		}
 	}
 	e := Wifi{}
 	err = json.Unmarshal(b, &e)
