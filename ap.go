@@ -97,6 +97,9 @@ func accessPointState() (*AccessPointState, error) {
 	if err != nil {
 		return nil, err
 	}
+	if a.Configg == nil {
+		return nil, ErrWrongStateFile
+	}
 	return a, nil
 }
 

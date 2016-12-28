@@ -12,6 +12,8 @@ import (
 	"github.com/urfave/cli"
 )
 
+var ErrWrongStateFile = errors.New("fconf: wrong state file")
+
 type WifiState struct {
 	Enabled bool  `json:"enabled"`
 	Configg *Wifi `json:"config"`
@@ -84,6 +86,9 @@ func wifiClientState() (*WifiState, error) {
 	err = json.Unmarshal(b, w)
 	if err != nil {
 		return nil, err
+	}
+	if w.Configg == nil {
+		return nil, ErrWrongStateFile
 	}
 	return w, nil
 }

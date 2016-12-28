@@ -83,6 +83,9 @@ func ethernetState() (*EthernetState, error) {
 	if err != nil {
 		return nil, err
 	}
+	if e.Configg == nil {
+		return nil, ErrWrongStateFile
+	}
 	if e.Configg.Interface == "" {
 		e.Configg.Interface = "eth0"
 	}

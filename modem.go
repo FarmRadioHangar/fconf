@@ -44,6 +44,9 @@ func fourGState() (*FourGState, error) {
 	if err != nil {
 		return nil, err
 	}
+	if f.Configg == nil {
+		return nil, ErrWrongStateFile
+	}
 	if f.Configg.Interface == "" {
 		f.Configg.Interface = "eth1"
 	}
