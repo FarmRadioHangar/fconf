@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/coreos/go-systemd/unit"
 	"github.com/urfave/cli"
@@ -30,12 +31,13 @@ func (f FourG) ToSystemdUnit() ([]*unit.UnitOption, error) {
 	return f.Network.ToSystemdUnit()
 }
 
-func fourGState() (*FourGState, error) {
+func fourGState(i string) (*FourGState, error) {
 	dir := os.Getenv("FCONF_CONFIGDIR")
 	if dir == "" {
 		dir = fconfConfigDir
 	}
-	b, err := ioutil.ReadFile(filepath.Join(dir, defaultFougGConfig))
+	b, err := ioutil.ReadFile(filepath.Join(dir,
+		fmt.Sprintf(defaultFougGConfig, i)))
 	if err != nil {
 		return nil, err
 	}
@@ -46,9 +48,6 @@ func fourGState() (*FourGState, error) {
 	}
 	if f.Configg == nil {
 		return nil, ErrWrongStateFile
-	}
-	if f.Configg.Interface == "" {
-		f.Configg.Interface = "eth1"
 	}
 	return f, nil
 }
@@ -73,13 +72,23 @@ func RemoveFourg(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	f, err := fourGState()
+	var i string
+	if ctx.IsSet("interface") {
+		i = ctx.String("interface")
+	} else {
+		i = ctx.Args().First()
+	}
+	if i == "" {
+		return errors.New("missing interface, you must specify interface")
+	}
+	f, err := fourGState(i)
 	if err != nil {
 		return err
 	}
 
 	// removestate file
-	stateFile := filepath.Join(stateDir(), defaultFougGConfig)
+	stateFile := filepath.Join(stateDir(),
+		fmt.Sprintf(defaultFougGConfig, i))
 	err = removeFile(stateFile)
 	if err != nil {
 		return err
@@ -106,7 +115,16 @@ func EnableFourg(ctx *cli.Context) error {
 			return err
 		}
 	}
-	e, err := fourGState()
+	var i string
+	if ctx.IsSet("interface") {
+		i = ctx.String("interface")
+	} else {
+		i = ctx.Args().First()
+	}
+	if i == "" {
+		return errors.New("missing interface, you must specify interface")
+	}
+	e, err := fourGState(i)
 	if err != nil {
 		return err
 	}
@@ -123,11 +141,21 @@ func EnableFourg(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	return keepState(defaultFougGConfig, data)
+	return keepState(
+		fmt.Sprintf(defaultFougGConfig, i), data)
 }
 
 func DisableFourg(ctx *cli.Context) error {
-	e, err := fourGState()
+	var i string
+	if ctx.IsSet("interface") {
+		i = ctx.String("interface")
+	} else {
+		i = ctx.Args().First()
+	}
+	if i == "" {
+		return errors.New("missing interface, you must specify interface")
+	}
+	e, err := fourGState(i)
 	if err != nil {
 		return err
 	}
@@ -141,7 +169,9 @@ func DisableFourg(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	return keepState(defaultFougGConfig, data)
+	ctx.Set("interface", i)
+	return keepState(
+		fmt.Sprintf(defaultFougGConfig, i), data)
 }
 
 func configFourgCMD(ctx *cli.Context) error {
@@ -169,9 +199,15 @@ func configFourgCMD(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
+	if e.Interface == "" {
+		e.Interface = "eth1"
+	}
 	err = checkDir(base)
 	if err != nil {
 		return err
+	}
+	if strings.Contains(name, "%s") {
+		name = fmt.Sprintf(name, e.Interface)
 	}
 	filename := filepath.Join(base, name)
 	err = CreateSystemdFile(e, filename, 0644)
@@ -181,5 +217,6 @@ func configFourgCMD(ctx *cli.Context) error {
 	fmt.Printf("successful written 4G configuration to %s \n", filename)
 	state := &FourGState{Configg: &e}
 	b, _ = json.Marshal(state)
-	return keepState(defaultFougGConfig, b)
+	return keepState(
+		fmt.Sprintf(defaultFougGConfig, e.Interface), b)
 }

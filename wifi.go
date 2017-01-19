@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/urfave/cli"
 )
@@ -44,7 +45,16 @@ func EnableWifiClient(ctx *cli.Context) error {
 			return err
 		}
 	}
-	w, err := wifiClientState()
+	var i string
+	if ctx.IsSet("interface") {
+		i = ctx.String("interface")
+	} else {
+		i = ctx.Args().First()
+	}
+	if i == "" {
+		return errors.New("missing interface, you must specify interface")
+	}
+	w, err := wifiClientState(i)
 	if err != nil {
 		return err
 	}
@@ -69,16 +79,18 @@ func EnableWifiClient(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	return keepState(defaultWifiClientConfig, data)
+	return keepState(
+		fmt.Sprintf(defaultWifiClientConfig, w.Configg.Interface), data)
 
 }
 
-func wifiClientState() (*WifiState, error) {
+func wifiClientState(i string) (*WifiState, error) {
 	dir := os.Getenv("FCONF_CONFIGDIR")
 	if dir == "" {
 		dir = fconfConfigDir
 	}
-	b, err := ioutil.ReadFile(filepath.Join(dir, defaultWifiClientConfig))
+	b, err := ioutil.ReadFile(filepath.Join(dir,
+		fmt.Sprintf(defaultWifiClientConfig, i)))
 	if err != nil {
 		return nil, err
 	}
@@ -118,9 +130,15 @@ func configWifiClient(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
+	if e.Interface == "" {
+		e.Interface = "wlan0"
+	}
 	err = checkDir(base)
 	if err != nil {
 		return err
+	}
+	if strings.Contains(name, "%s") {
+		name = fmt.Sprintf(name, e.Interface)
 	}
 	filename := filepath.Join(base, name)
 	err = CreateSystemdFile(e, filename, 0644)
@@ -132,9 +150,6 @@ func configWifiClient(ctx *cli.Context) error {
 	err = checkDir(path)
 	if err != nil {
 		return err
-	}
-	if e.Interface == "" {
-		e.Interface = "wlan0"
 	}
 	cname := "wpa_supplicant-" + e.Interface + ".conf"
 	s, err := wifiConfig(e.Username, e.Password)
@@ -148,7 +163,9 @@ func configWifiClient(ctx *cli.Context) error {
 	state := &WifiState{Configg: &e}
 	b, _ = json.Marshal(state)
 	fmt.Printf("successful written wifi connection  configuration to %s \n", filepath.Join(path, cname))
-	return keepState(defaultWifiClientConfig, b)
+	ctx.Set("interface", e.Interface)
+	return keepState(
+		fmt.Sprintf(defaultWifiClientConfig, e.Interface), b)
 }
 
 func wifiConfig(username, password string) (string, error) {
@@ -162,14 +179,19 @@ func wifiConfig(username, password string) (string, error) {
 }
 
 func DisableWifi(ctx *cli.Context) error {
-	w, err := wifiClientState()
+	var i string
+	if ctx.IsSet("interface") {
+		i = ctx.String("interface")
+	} else {
+		i = ctx.Args().First()
+	}
+	if i == "" {
+		return errors.New("missing interface, you must specify interface")
+	}
+	w, err := wifiClientState(i)
 	if err != nil {
 		return err
 	}
-	if w.Configg.Interface == "" {
-		w.Configg.Interface = "wlan0"
-	}
-
 	service := "wpa_supplicant@" + w.Configg.Interface
 	err = disableService(service)
 	if err != nil {
@@ -188,16 +210,23 @@ func DisableWifi(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	return keepState(defaultWifiClientConfig, data)
+	return keepState(
+		fmt.Sprintf(defaultWifiClientConfig, i), data)
 }
 
 func RemoveWifi(ctx *cli.Context) error {
-	w, err := wifiClientState()
+	var i string
+	if ctx.IsSet("interface") {
+		i = ctx.String("interface")
+	} else {
+		i = ctx.Args().First()
+	}
+	if i == "" {
+		return errors.New("missing interface, you must specify interface")
+	}
+	w, err := wifiClientState(i)
 	if err != nil {
 		return err
-	}
-	if w.Configg.Interface == "" {
-		w.Configg.Interface = "wlan0"
 	}
 
 	// remove systemd file
@@ -226,6 +255,7 @@ func RemoveWifi(ctx *cli.Context) error {
 	}
 
 	// remove the state file
-	stateFile := filepath.Join(stateDir(), defaultWifiClientConfig)
+	stateFile := filepath.Join(stateDir(),
+		fmt.Sprintf(defaultWifiClientConfig, i))
 	return removeFile(stateFile)
 }

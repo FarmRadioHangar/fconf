@@ -8,10 +8,10 @@ import (
 )
 
 const (
-	defaultEthernetConfig    = "wired.json"
-	defaultWifiClientConfig  = "wireless.json"
-	defaultAccessPointConfig = "access_point.json"
-	defaultFougGConfig       = "4g.json"
+	defaultEthernetConfig    = "wired-%s.json"
+	defaultWifiClientConfig  = "wireless-%s.json"
+	defaultAccessPointConfig = "access_point-%s.json"
+	defaultFougGConfig       = "4g-%s.json"
 )
 
 func main() {
@@ -159,6 +159,12 @@ func main() {
 				},
 			},
 			Action: ApCMD,
+		},
+	}
+	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name:  "intreface",
+			Usage: "the interface",
 		},
 	}
 	err := app.Run(os.Args)

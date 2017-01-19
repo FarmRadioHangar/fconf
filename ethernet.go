@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/urfave/cli"
 )
@@ -45,7 +46,13 @@ func EnableEthernet(ctx *cli.Context) error {
 			return err
 		}
 	}
-	e, err := ethernetState()
+	var i string
+	if ctx.IsSet("interface") {
+		i = ctx.String("interface")
+	} else {
+		i = ctx.Args().First()
+	}
+	e, err := ethernetState(i)
 	if err != nil {
 		return err
 	}
@@ -62,19 +69,21 @@ func EnableEthernet(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	return keepState(defaultEthernetConfig, data)
+	return keepState(
+		fmt.Sprintf(defaultEthernetConfig, i), data)
 }
 
 // gives the current state of the ethernet configuration. This will return an
 // error if the system hast been configured yet.
 //
 // Configuration state files are written in $FCONF_CONFIGDIR directory.
-func ethernetState() (*EthernetState, error) {
+func ethernetState(i string) (*EthernetState, error) {
 	dir := os.Getenv("FCONF_CONFIGDIR")
 	if dir == "" {
 		dir = fconfConfigDir
 	}
-	b, err := ioutil.ReadFile(filepath.Join(dir, defaultEthernetConfig))
+	b, err := ioutil.ReadFile(filepath.Join(dir,
+		fmt.Sprintf(defaultEthernetConfig, i)))
 	if err != nil {
 		return nil, err
 	}
@@ -121,15 +130,23 @@ func configEthernetCMD(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
+	if e.Interface == "" {
+		e.Interface = "eth0"
+	}
+	if strings.Contains(name, "%s") {
+		name = fmt.Sprintf(name, e.Interface)
+	}
 	filename := filepath.Join(base, name)
 	err = CreateSystemdFile(e, filename, 0644)
 	if err != nil {
 		return err
 	}
+	ctx.Set("interface", e.Interface)
 	fmt.Printf("successful written ethernet configuration to %s \n", filename)
 	state := &EthernetState{Configg: &e}
 	b, _ = json.Marshal(state)
-	return keepState(defaultEthernetConfig, b)
+	return keepState(
+		fmt.Sprintf(defaultEthernetConfig, e.Interface), b)
 }
 
 func keepState(filename string, src []byte) error {
@@ -146,7 +163,17 @@ func keepState(filename string, src []byte) error {
 
 //DisableEthernet disables ethernet temporaly.
 func DisableEthernet(ctx *cli.Context) error {
-	e, err := ethernetState()
+	var i string
+	if ctx.IsSet("interface") {
+		i = ctx.String("interface")
+	} else {
+		i = ctx.Args().First()
+	}
+	if i == "" {
+		return errors.New("missing interface, you must specify interface")
+	}
+	ctx.Set("interface", i)
+	e, err := ethernetState(i)
 	if err != nil {
 		return err
 	}
@@ -160,7 +187,8 @@ func DisableEthernet(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	return keepState(defaultEthernetConfig, data)
+	return keepState(
+		fmt.Sprintf(defaultEthernetConfig, i), data)
 }
 
 //RemoveEthernet removes ethernet service.
@@ -169,12 +197,22 @@ func RemoveEthernet(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	e, err := ethernetState()
+	var i string
+	if ctx.IsSet("interface") {
+		i = ctx.String("interface")
+	} else {
+		i = ctx.Args().First()
+	}
+	if i == "" {
+		return errors.New("missing interface, you must specify interface")
+	}
+	e, err := ethernetState(i)
 	if err != nil {
 		return err
 	}
 	// removestate file
-	stateFile := filepath.Join(stateDir(), defaultEthernetConfig)
+	stateFile := filepath.Join(stateDir(),
+		fmt.Sprintf(defaultEthernetConfig, i))
 	err = removeFile(stateFile)
 	if err != nil {
 		return err

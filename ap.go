@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/urfave/cli"
 )
@@ -64,6 +65,9 @@ func ConfigApCMD(ctx *cli.Context) error {
 	}
 	ap := DefaultAccesPoint()
 	ap.Update(e)
+	if strings.Contains(name, "%s") {
+		name = fmt.Sprintf(name, ap.WifiIface)
+	}
 	filename := filepath.Join(base, name)
 	var buf bytes.Buffer
 	_, err = ap.WriteTo(&buf)
@@ -80,15 +84,18 @@ func ConfigApCMD(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	return keepState(defaultAccessPointConfig, data)
+	ctx.Set("interface", ap.WifiIface)
+	return keepState(
+		fmt.Sprintf(defaultAccessPointConfig, ap.WifiIface), data)
 }
 
-func accessPointState() (*AccessPointState, error) {
+func accessPointState(i string) (*AccessPointState, error) {
 	dir := os.Getenv("FCONF_CONFIGDIR")
 	if dir == "" {
 		dir = fconfConfigDir
 	}
-	b, err := ioutil.ReadFile(filepath.Join(dir, defaultAccessPointConfig))
+	b, err := ioutil.ReadFile(filepath.Join(dir,
+		fmt.Sprintf(defaultAccessPointConfig, i)))
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +117,16 @@ func EnableApCMD(ctx *cli.Context) error {
 			return err
 		}
 	}
-	state, err := accessPointState()
+	var i string
+	if ctx.IsSet("interface") {
+		i = ctx.String("interface")
+	} else {
+		i = ctx.Args().First()
+	}
+	if i == "" {
+		return errors.New("missing interface, you must specify interface")
+	}
+	state, err := accessPointState(i)
 	if err != nil {
 		return err
 	}
@@ -128,11 +144,21 @@ func EnableApCMD(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	return keepState(defaultAccessPointConfig, data)
+	return keepState(
+		fmt.Sprintf(defaultAccessPointConfig, i), data)
 }
 
 func DisableApCMD(ctx *cli.Context) error {
-	state, err := accessPointState()
+	var i string
+	if ctx.IsSet("interface") {
+		i = ctx.String("interface")
+	} else {
+		i = ctx.Args().First()
+	}
+	if i == "" {
+		return errors.New("missing interface, you must specify interface")
+	}
+	state, err := accessPointState(i)
 	if err != nil {
 		return err
 	}
@@ -150,10 +176,20 @@ func DisableApCMD(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	return keepState(defaultAccessPointConfig, data)
+	return keepState(
+		fmt.Sprintf(defaultAccessPointConfig, i), data)
 }
 func RemoveApCMD(ctx *cli.Context) error {
-	a, err := accessPointState()
+	var i string
+	if ctx.IsSet("interface") {
+		i = ctx.String("interface")
+	} else {
+		i = ctx.Args().First()
+	}
+	if i == "" {
+		return errors.New("missing interface, you must specify interface")
+	}
+	a, err := accessPointState(i)
 	if err != nil {
 		return err
 	}
@@ -173,6 +209,7 @@ func RemoveApCMD(ctx *cli.Context) error {
 	}
 
 	// remove the state file
-	stateFile := filepath.Join(stateDir(), defaultAccessPointConfig)
+	stateFile := filepath.Join(stateDir(),
+		fmt.Sprintf(defaultAccessPointConfig, i))
 	return removeFile(stateFile)
 }

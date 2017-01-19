@@ -11,18 +11,17 @@ import (
 )
 
 const (
-	networkBase       = "/etc/systemd/network"
-	apConfigBase      = "/etc/"
-	ethernetService   = "fconf-wired.network"
-	fourgService      = "fconf-4g.network"
-	wirelessService   = "fconf-wireless.network"
-	apConfigFile      = "create_ap.conf"
-	accessPointConfig = "create_ap.conf"
-	enableFlag        = "enable"
-	disableFlag       = "disable"
-	removeFlag        = "remove"
-	configFlag        = "config"
-	fconfConfigDir    = "/etc/fconf"
+	networkBase     = "/etc/systemd/network"
+	apConfigBase    = "/etc/"
+	ethernetService = "fconf-wired-%s.network"
+	fourgService    = "fconf-4g-%s.network"
+	wirelessService = "fconf-wireless-%s.network"
+	apConfigFile    = "create_ap-%s.conf"
+	enableFlag      = "enable"
+	disableFlag     = "disable"
+	removeFlag      = "remove"
+	configFlag      = "config"
+	fconfConfigDir  = "/etc/fconf"
 )
 
 //Ethernet is the ehternet configuration.
