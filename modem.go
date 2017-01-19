@@ -73,6 +73,10 @@ func RemoveFourg(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
+	f, err := fourGState()
+	if err != nil {
+		return err
+	}
 
 	// removestate file
 	stateFile := filepath.Join(stateDir(), defaultFougGConfig)
@@ -83,6 +87,11 @@ func RemoveFourg(ctx *cli.Context) error {
 	// remove systemd file
 	unit := filepath.Join(networkBase, fourgService)
 	err = removeFile(unit)
+	if err != nil {
+		return err
+	}
+
+	err = FlushInterface(f.Configg.Interface)
 	if err != nil {
 		return err
 	}

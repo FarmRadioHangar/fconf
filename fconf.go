@@ -130,3 +130,7 @@ func ReadFromStdin() ([]byte, error) {
 	r := bufio.NewReader(os.Stdin)
 	return r.ReadBytes('\n')
 }
+
+func FlushInterface(i string) error {
+	return exec.Command("ip", "addr", "flush", i).Run()
+}

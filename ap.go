@@ -153,7 +153,7 @@ func DisableApCMD(ctx *cli.Context) error {
 	return keepState(defaultAccessPointConfig, data)
 }
 func RemoveApCMD(ctx *cli.Context) error {
-	_, err := accessPointState()
+	a, err := accessPointState()
 	if err != nil {
 		return err
 	}
@@ -163,6 +163,11 @@ func RemoveApCMD(ctx *cli.Context) error {
 		return err
 	}
 	err = disableService(service)
+	if err != nil {
+		return err
+	}
+
+	err = FlushInterface(a.Configg.Interface)
 	if err != nil {
 		return err
 	}

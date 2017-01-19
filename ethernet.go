@@ -169,7 +169,10 @@ func RemoveEthernet(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-
+	e, err := ethernetState()
+	if err != nil {
+		return err
+	}
 	// removestate file
 	stateFile := filepath.Join(stateDir(), defaultEthernetConfig)
 	err = removeFile(stateFile)
@@ -179,6 +182,15 @@ func RemoveEthernet(ctx *cli.Context) error {
 	// remove systemd file
 	unit := filepath.Join(networkBase, ethernetService)
 	err = removeFile(unit)
+	if err != nil {
+		return err
+	}
+	if err != nil {
+		return err
+	}
+
+	// Flush settings for the interface
+	err = FlushInterface(e.Configg.Interface)
 	if err != nil {
 		return err
 	}
