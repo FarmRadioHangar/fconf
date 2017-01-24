@@ -8,10 +8,10 @@ import (
 )
 
 const (
-	defaultEthernetConfig    = "wired-%s.json"
-	defaultWifiClientConfig  = "wireless-%s.json"
-	defaultAccessPointConfig = "access_point-%s.json"
-	defaultFougGConfig       = "4g-%s.json"
+	defaultEthernetConfig    = "ethernet@%s.json"
+	defaultWifiClientConfig  = "wifi-client@%s.json"
+	defaultAccessPointConfig = "access-point@%s.json"
+	defaultFougGConfig       = "4g-ndis@%s.json"
 )
 
 func main() {
@@ -56,8 +56,8 @@ func main() {
 			Action: EthernetCMD,
 		},
 		{
-			Name:    "4g",
-			Aliases: []string{"g"},
+			Name:    "4g-ndis",
+			Aliases: []string{"4g"},
 			Usage:   "configures 4G with systemd",
 			Flags: []cli.Flag{
 				cli.StringFlag{
