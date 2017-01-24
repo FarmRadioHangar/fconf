@@ -74,7 +74,7 @@ func EnableWifiClient(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	//w.Enabled = true
+	w.Enabled = true
 	data, err := json.Marshal(w)
 	if err != nil {
 		return err

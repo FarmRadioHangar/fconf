@@ -136,7 +136,7 @@ func EnableFourg(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	//e.Enabled = true
+	e.Enabled = true
 	data, err := json.Marshal(e)
 	if err != nil {
 		return err
