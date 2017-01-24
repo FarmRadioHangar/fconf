@@ -41,7 +41,7 @@ func (e Ethernet) ToSystemdUnit() ([]*unit.UnitOption, error) {
 type Wifi struct {
 	Network
 	Username string `json:"ssid"`
-	Password string `json:"password"`
+	Password string `json:"passphrase"`
 }
 
 //UnitFile is an interface for systemd uni file
