@@ -163,7 +163,7 @@ func configWifiClient(ctx *cli.Context) error {
 	state := &WifiState{Configg: &e}
 	b, _ = json.Marshal(state)
 	fmt.Printf("successful written wifi connection  configuration to %s \n", filepath.Join(path, cname))
-	ctx.Set("interface", e.Interface)
+	ctx.GlobalSet("interface", e.Interface)
 	return keepState(
 		fmt.Sprintf(defaultWifiClientConfig, e.Interface), b)
 }
@@ -179,12 +179,7 @@ func wifiConfig(username, password string) (string, error) {
 }
 
 func DisableWifi(ctx *cli.Context) error {
-	var i string
-	if ctx.IsSet("interface") {
-		i = ctx.String("interface")
-	} else {
-		i = ctx.Args().First()
-	}
+	i := getInterface(ctx)
 	if i == "" {
 		return errors.New("missing interface, you must specify interface")
 	}
@@ -215,12 +210,7 @@ func DisableWifi(ctx *cli.Context) error {
 }
 
 func RemoveWifi(ctx *cli.Context) error {
-	var i string
-	if ctx.IsSet("interface") {
-		i = ctx.String("interface")
-	} else {
-		i = ctx.Args().First()
-	}
+	i := getInterface(ctx)
 	if i == "" {
 		return errors.New("missing interface, you must specify interface")
 	}
