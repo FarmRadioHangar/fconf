@@ -46,12 +46,7 @@ func EnableEthernet(ctx *cli.Context) error {
 			return err
 		}
 	}
-	var i string
-	if ctx.IsSet("interface") {
-		i = ctx.String("interface")
-	} else {
-		i = ctx.Args().First()
-	}
+	i := getInterface(ctx)
 	e, err := ethernetState(i)
 	if err != nil {
 		return err
@@ -150,7 +145,7 @@ func configEthernetCMD(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	ctx.GlobalSet("interface", e.Interface)
+	setInterface(ctx, e.Interface)
 	fmt.Printf("successful written ethernet configuration to %s \n", filename)
 	state := &EthernetState{Configg: &e}
 	b, _ = json.Marshal(state)

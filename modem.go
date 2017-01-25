@@ -77,6 +77,9 @@ func getInterface(ctx *cli.Context) string {
 	}
 	return i
 }
+func setInterface(ctx *cli.Context, i string) {
+	ctx.GlobalSet("interface", i)
+}
 func RemoveFourg(ctx *cli.Context) error {
 	err := DisableFourg(ctx)
 	if err != nil {

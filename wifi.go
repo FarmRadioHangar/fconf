@@ -45,12 +45,7 @@ func EnableWifiClient(ctx *cli.Context) error {
 			return err
 		}
 	}
-	var i string
-	if ctx.IsSet("interface") {
-		i = ctx.String("interface")
-	} else {
-		i = ctx.Args().First()
-	}
+	i := getInterface(ctx)
 	if i == "" {
 		return errors.New("missing interface, you must specify interface")
 	}
@@ -163,7 +158,7 @@ func configWifiClient(ctx *cli.Context) error {
 	state := &WifiState{Configg: &e}
 	b, _ = json.Marshal(state)
 	fmt.Printf("successful written wifi connection  configuration to %s \n", filepath.Join(path, cname))
-	ctx.GlobalSet("interface", e.Interface)
+	setInterface(ctx, e.Interface)
 	return keepState(
 		fmt.Sprintf(defaultWifiClientConfig, e.Interface), b)
 }
