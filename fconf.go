@@ -2,12 +2,15 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"io"
+	"net"
 	"os"
 	"os/exec"
 
 	"github.com/coreos/go-systemd/unit"
+	"github.com/urfave/cli"
 )
 
 const (
@@ -132,4 +135,17 @@ func ReadFromStdin() ([]byte, error) {
 
 func FlushInterface(i string) error {
 	return exec.Command("ip", "addr", "flush", i).Run()
+}
+
+func ListInterface(ctx *cli.Context) error {
+	i, err := net.Interfaces()
+	if err != nil {
+		return err
+	}
+	b, err := json.Marshal(i)
+	if err != nil {
+		return err
+	}
+	fmt.Println(string(b))
+	return nil
 }

@@ -160,6 +160,12 @@ func main() {
 			},
 			Action: ApCMD,
 		},
+		{
+			Name:    "list-interface",
+			Aliases: []string{"i"},
+			Usage:   "prints a json array of all interfaces",
+			Action:  ListInterface,
+		},
 	}
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
