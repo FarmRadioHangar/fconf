@@ -67,17 +67,22 @@ func FourgCMD(ctx *cli.Context) error {
 	}
 	return nil
 }
+
+func getInterface(ctx *cli.Context) string {
+	var i string
+	if ctx.GlobalIsSet("interface") {
+		i = ctx.GlobalString("interface")
+	} else {
+		i = ctx.Args().First()
+	}
+	return i
+}
 func RemoveFourg(ctx *cli.Context) error {
 	err := DisableFourg(ctx)
 	if err != nil {
 		return err
 	}
-	var i string
-	if ctx.IsSet("interface") {
-		i = ctx.String("interface")
-	} else {
-		i = ctx.Args().First()
-	}
+	i := getInterface(ctx)
 	if i == "" {
 		return errors.New("missing interface, you must specify interface")
 	}
@@ -116,12 +121,7 @@ func EnableFourg(ctx *cli.Context) error {
 			return err
 		}
 	}
-	var i string
-	if ctx.IsSet("interface") {
-		i = ctx.String("interface")
-	} else {
-		i = ctx.Args().First()
-	}
+	i := getInterface(ctx)
 	if i == "" {
 		return errors.New("missing interface, you must specify interface")
 	}
@@ -158,12 +158,7 @@ func EnableFourg(ctx *cli.Context) error {
 }
 
 func DisableFourg(ctx *cli.Context) error {
-	var i string
-	if ctx.IsSet("interface") {
-		i = ctx.String("interface")
-	} else {
-		i = ctx.Args().First()
-	}
+	i := getInterface(ctx)
 	if i == "" {
 		return errors.New("missing interface, you must specify interface")
 	}
@@ -187,7 +182,6 @@ func DisableFourg(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	ctx.Set("interface", i)
 	return keepState(
 		fmt.Sprintf(defaultFougGConfig, i), data)
 }
@@ -234,6 +228,7 @@ func configFourgCMD(ctx *cli.Context) error {
 	}
 	fmt.Printf("successful written 4G configuration to %s \n", filename)
 	state := &FourGState{Configg: &e}
+	ctx.GlobalSet("interface", e.Interface)
 	b, _ = json.Marshal(state)
 	return keepState(
 		fmt.Sprintf(defaultFougGConfig, e.Interface), b)
