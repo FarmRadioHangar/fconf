@@ -163,7 +163,7 @@ func main() {
 	}
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
-			Name:  "intreface",
+			Name:  "interface",
 			Usage: "the interface",
 		},
 	}
