@@ -94,7 +94,8 @@ func RemoveFourg(ctx *cli.Context) error {
 		return err
 	}
 	// remove systemd file
-	unit := filepath.Join(networkBase, fourgService)
+	unit := filepath.Join(networkBase,
+		fmt.Sprintf(fourgService, i))
 	err = removeFile(unit)
 	if err != nil {
 		return err
@@ -162,6 +163,12 @@ func DisableFourg(ctx *cli.Context) error {
 		return err
 	}
 	_, err = exec.Command("ip", "link", "set", "down", "dev", e.Configg.Interface).Output()
+	if err != nil {
+		return err
+	}
+	unit := filepath.Join(networkBase,
+		fmt.Sprintf(fourgService, e.Configg.Interface))
+	err = removeFile(unit)
 	if err != nil {
 		return err
 	}
