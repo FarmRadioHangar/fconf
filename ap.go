@@ -84,7 +84,7 @@ func ConfigApCMD(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	ctx.Set("interface", ap.WifiIface)
+	ctx.GlobalSet("interface", ap.WifiIface)
 	return keepState(
 		fmt.Sprintf(defaultAccessPointConfig, ap.WifiIface), data)
 }
@@ -117,12 +117,7 @@ func EnableApCMD(ctx *cli.Context) error {
 			return err
 		}
 	}
-	var i string
-	if ctx.IsSet("interface") {
-		i = ctx.String("interface")
-	} else {
-		i = ctx.Args().First()
-	}
+	i := getInterface(ctx)
 	if i == "" {
 		return errors.New("missing interface, you must specify interface")
 	}
@@ -149,12 +144,7 @@ func EnableApCMD(ctx *cli.Context) error {
 }
 
 func DisableApCMD(ctx *cli.Context) error {
-	var i string
-	if ctx.IsSet("interface") {
-		i = ctx.String("interface")
-	} else {
-		i = ctx.Args().First()
-	}
+	i := getInterface(ctx)
 	if i == "" {
 		return errors.New("missing interface, you must specify interface")
 	}
@@ -180,12 +170,7 @@ func DisableApCMD(ctx *cli.Context) error {
 		fmt.Sprintf(defaultAccessPointConfig, i), data)
 }
 func RemoveApCMD(ctx *cli.Context) error {
-	var i string
-	if ctx.IsSet("interface") {
-		i = ctx.String("interface")
-	} else {
-		i = ctx.Args().First()
-	}
+	i := getInterface(ctx)
 	if i == "" {
 		return errors.New("missing interface, you must specify interface")
 	}
