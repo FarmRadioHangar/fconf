@@ -198,7 +198,7 @@ func DisableWifi(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	//w.Enabled = false
+	w.Enabled = false
 	data, err := json.Marshal(w)
 	if err != nil {
 		return err

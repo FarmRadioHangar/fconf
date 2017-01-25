@@ -195,7 +195,7 @@ func DisableEthernet(ctx *cli.Context) error {
 		return err
 	}
 	fmt.Println("successfully disabled ethernet")
-	//e.Enabled = false
+	e.Enabled = false
 	data, err := json.Marshal(e)
 	if err != nil {
 		return err
