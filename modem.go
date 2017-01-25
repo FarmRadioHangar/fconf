@@ -161,6 +161,9 @@ func EnableFourg(ctx *cli.Context) error {
 }
 
 func DisableFourg(ctx *cli.Context) error {
+	if ctx.IsSet(configFlag) {
+		fmt.Println("WARN: config flag will be ignored when diable flag is used")
+	}
 	i := getInterface(ctx)
 	if i == "" {
 		return errors.New("missing interface, you must specify interface")
