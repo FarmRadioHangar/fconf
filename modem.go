@@ -129,6 +129,15 @@ func EnableFourg(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
+	unit := filepath.Join(networkBase,
+		fmt.Sprintf(fourgService, e.Configg.Interface))
+	_, err = os.Stat(unit)
+	if os.IsNotExist(err) {
+		err = CreateSystemdFile(e.Configg, unit, 0644)
+		if err != nil {
+			return err
+		}
+	}
 	_, err = exec.Command("ip", "link", "set", "up", e.Configg.Interface).Output()
 	if err != nil {
 		return fmt.Errorf("ERROR: runnin ip link set up %s %v",
