@@ -130,11 +130,13 @@ func EnableFourg(ctx *cli.Context) error {
 	}
 	_, err = exec.Command("ip", "link", "set", "up", e.Configg.Interface).Output()
 	if err != nil {
-		return err
+		return fmt.Errorf("ERROR: runnin ip link set up %s %v",
+			e.Configg.Interface, err,
+		)
 	}
 	err = restartService("systemd-networkd")
 	if err != nil {
-		return err
+		return fmt.Errorf("ERROR: restarting systemd %v ", err)
 	}
 	e.Enabled = true
 	data, err := json.Marshal(e)
@@ -164,7 +166,7 @@ func DisableFourg(ctx *cli.Context) error {
 		return err
 	}
 	fmt.Println("successfully disabled 4G")
-	//e.Enabled = false
+	e.Enabled = false
 	data, err := json.Marshal(e)
 	if err != nil {
 		return err
