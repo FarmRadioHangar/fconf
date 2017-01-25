@@ -166,10 +166,12 @@ func DisableFourg(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	//_, err = exec.Command("ip", "link", "set", "down", "dev", e.Configg.Interface).Output()
-	//if err != nil {
-	//return err
-	//}
+	_, err = exec.Command("ip", "addr", "flush", "dev", e.Configg.Interface).Output()
+	if err != nil {
+		return fmt.Errorf("ERROR: running ip addr flush dev %s %v",
+			e.Configg.Interface, err,
+		)
+	}
 	unit := filepath.Join(networkBase,
 		fmt.Sprintf(fourgService, e.Configg.Interface))
 	err = removeFile(unit)
