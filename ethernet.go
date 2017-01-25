@@ -167,6 +167,9 @@ func keepState(filename string, src []byte) error {
 
 //DisableEthernet disables ethernet temporaly.
 func DisableEthernet(ctx *cli.Context) error {
+	if ctx.IsSet(configFlag) {
+		fmt.Println("WARN: config flag will be ignored")
+	}
 	i := getInterface(ctx)
 	if i == "" {
 		return errors.New("missing interface, you must specify interface")
