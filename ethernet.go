@@ -141,7 +141,7 @@ func configEthernetCMD(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	ctx.Set("interface", e.Interface)
+	ctx.GlobalSet("interface", e.Interface)
 	fmt.Printf("successful written ethernet configuration to %s \n", filename)
 	state := &EthernetState{Configg: &e}
 	b, _ = json.Marshal(state)
@@ -163,12 +163,7 @@ func keepState(filename string, src []byte) error {
 
 //DisableEthernet disables ethernet temporaly.
 func DisableEthernet(ctx *cli.Context) error {
-	var i string
-	if ctx.IsSet("interface") {
-		i = ctx.String("interface")
-	} else {
-		i = ctx.Args().First()
-	}
+	i := getInterface(ctx)
 	if i == "" {
 		return errors.New("missing interface, you must specify interface")
 	}
@@ -197,12 +192,7 @@ func RemoveEthernet(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	var i string
-	if ctx.IsSet("interface") {
-		i = ctx.String("interface")
-	} else {
-		i = ctx.Args().First()
-	}
+	i := getInterface(ctx)
 	if i == "" {
 		return errors.New("missing interface, you must specify interface")
 	}
