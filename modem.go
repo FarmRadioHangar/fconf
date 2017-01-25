@@ -166,10 +166,10 @@ func DisableFourg(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	_, err = exec.Command("ip", "link", "set", "down", "dev", e.Configg.Interface).Output()
-	if err != nil {
-		return err
-	}
+	//_, err = exec.Command("ip", "link", "set", "down", "dev", e.Configg.Interface).Output()
+	//if err != nil {
+	//return err
+	//}
 	unit := filepath.Join(networkBase,
 		fmt.Sprintf(fourgService, e.Configg.Interface))
 	err = removeFile(unit)
@@ -179,6 +179,10 @@ func DisableFourg(ctx *cli.Context) error {
 	fmt.Println("successfully disabled 4G")
 	e.Enabled = false
 	data, err := json.Marshal(e)
+	if err != nil {
+		return err
+	}
+	err = restartService("systemd-networkd")
 	if err != nil {
 		return err
 	}
