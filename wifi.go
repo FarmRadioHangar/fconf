@@ -56,6 +56,15 @@ func EnableWifiClient(ctx *cli.Context) error {
 	if w.Configg.Interface == "" {
 		w.Configg.Interface = "wlan0"
 	}
+	unit := filepath.Join(networkBase,
+		fmt.Sprintf(wirelessService, w.Configg.Interface))
+	_, err = os.Stat(unit)
+	if os.IsNotExist(err) {
+		err = CreateSystemdFile(w.Configg, unit, 0644)
+		if err != nil {
+			return err
+		}
+	}
 	service := "wpa_supplicant@" + w.Configg.Interface
 	err = restartService(service)
 	if err != nil {
