@@ -207,6 +207,18 @@ func DisableWifi(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
+	_, err = exec.Command("ip", "addr", "flush", "dev", w.Configg.Interface).Output()
+	if err != nil {
+		return fmt.Errorf("ERROR: running ip addr flush dev %s %v",
+			w.Configg.Interface, err,
+		)
+	}
+	unit := filepath.Join(networkBase,
+		fmt.Sprintf(wirelessService, w.Configg.Interface))
+	err = removeFile(unit)
+	if err != nil {
+		return err
+	}
 	return keepState(
 		fmt.Sprintf(defaultWifiClientConfig, i), data)
 }
