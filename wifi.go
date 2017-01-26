@@ -156,6 +156,10 @@ func configWifiClient(ctx *cli.Context) error {
 		return err
 	}
 	state := &WifiState{Configg: &e}
+	ws, err := wifiClientState(e.Interface)
+	if err == nil {
+		state.Enabled = ws.Enabled
+	}
 	b, _ = json.Marshal(state)
 	fmt.Printf("successful written wifi connection  configuration to %s \n", filepath.Join(path, cname))
 	setInterface(ctx, e.Interface)

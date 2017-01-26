@@ -80,6 +80,10 @@ func ConfigApCMD(ctx *cli.Context) error {
 	}
 	fmt.Printf("successful written access point configuration to %s \n", filename)
 	state := &AccessPointState{Configg: ap.State()}
+	as, err := accessPointState(ap.WifiIface)
+	if err == nil {
+		state.Enabled = as.Enabled
+	}
 	data, err := json.Marshal(state)
 	if err != nil {
 		return err

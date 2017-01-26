@@ -148,6 +148,10 @@ func configEthernetCMD(ctx *cli.Context) error {
 	setInterface(ctx, e.Interface)
 	fmt.Printf("successful written ethernet configuration to %s \n", filename)
 	state := &EthernetState{Configg: &e}
+	es, err := ethernetState(e.Interface)
+	if err == nil {
+		state.Enabled = es.Enabled
+	}
 	b, _ = json.Marshal(state)
 	return keepState(
 		fmt.Sprintf(defaultEthernetConfig, e.Interface), b)

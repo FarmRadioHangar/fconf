@@ -240,6 +240,10 @@ func configFourgCMD(ctx *cli.Context) error {
 	}
 	fmt.Printf("successful written 4G configuration to %s \n", filename)
 	state := &FourGState{Configg: &e}
+	ms, err := fourGState(e.Interface)
+	if err == nil {
+		state.Enabled = ms.Enabled
+	}
 	ctx.GlobalSet("interface", e.Interface)
 	b, _ = json.Marshal(state)
 	return keepState(
