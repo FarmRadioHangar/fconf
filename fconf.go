@@ -18,6 +18,7 @@ const (
 	apConfigBase    = "/etc/"
 	ethernetService = "fconf-wired-%s.network"
 	fourgService    = "fconf-4g-%s.network"
+	threeGService   = "fconf-wvdial.conf"
 	wirelessService = "fconf-wireless-%s.network"
 	apConfigFile    = "create_ap-%s.conf"
 	enableFlag      = "enable"

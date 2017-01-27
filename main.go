@@ -12,6 +12,7 @@ const (
 	defaultWifiClientConfig  = "wifi-client@%s.json"
 	defaultAccessPointConfig = "access-point@%s.json"
 	defaultFougGConfig       = "4g-ndis@%s.json"
+	defaultThreeGGConfig     = "3g-ras@%s.json"
 )
 
 func main() {
@@ -89,6 +90,40 @@ func main() {
 				},
 			},
 			Action: FourgCMD,
+		},
+		{
+			Name:    "3g-ras",
+			Aliases: []string{"3g"},
+			Usage:   "configures 3G ",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "name",
+					Usage: "The name of the config file",
+					Value: threeGService,
+				},
+				cli.StringFlag{
+					Name:  "dir",
+					Usage: "The directory in which to write the file",
+					Value: apConfigBase,
+				},
+				cli.StringFlag{
+					Name:  "config",
+					Usage: "The path to the json configuration file",
+				},
+				cli.BoolFlag{
+					Name:  "enable",
+					Usage: "Enables 3G",
+				},
+				cli.BoolFlag{
+					Name:  "disable",
+					Usage: "Disable 3G",
+				},
+				cli.BoolFlag{
+					Name:  "remove",
+					Usage: "Remove 3G",
+				},
+			},
+			Action: ThreegCMD,
 		},
 		{
 			Name:    "wifi-client",
