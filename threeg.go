@@ -25,16 +25,6 @@ type ThreeG struct {
 	DefaultGateway bool   `json:"defaultGateway"`
 }
 
-func (c *ThreeG) Prepare() *ThreeG {
-	if c.Username == "" {
-		c.Username = "0"
-	}
-	if c.Password == "" {
-		c.Password = "0"
-	}
-	return c
-}
-
 func (c *ThreeG) WriteTo(out io.Writer) error {
 	cfgTpl := `
 [Dialer Defaults]
@@ -59,7 +49,14 @@ Stupid Mode = 1
 	if err != nil {
 		return err
 	}
-	return tpl.Execute(out, c)
+	ctx := *c
+	if ctx.Username == "" {
+		ctx.Username = "0"
+	}
+	if ctx.Password == "" {
+		ctx.Password = "0"
+	}
+	return tpl.Execute(out, ctx)
 }
 
 type ThreeGState struct {
@@ -108,7 +105,6 @@ func configThreegCMD(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	e.Prepare()
 	err = checkDir(base)
 	if err != nil {
 		return err
