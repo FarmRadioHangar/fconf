@@ -71,9 +71,9 @@ func ThreegCMD(ctx *cli.Context) error {
 	if ctx.IsSet(enableFlag) {
 		return EnableThreeg(ctx)
 	}
-	//if ctx.IsSet(disableFlag) {
-	//return DisableThreeg(ctx)
-	//}
+	if ctx.IsSet(disableFlag) {
+		return DisableThreeg(ctx)
+	}
 	//if ctx.IsSet(removeFlag) {
 	//return RemoveThreeg(ctx)
 	//}
@@ -189,6 +189,37 @@ func EnableThreeg(ctx *cli.Context) error {
 		return err
 	}
 	fmt.Printf("successfully enabled 3g for %s \n", i)
+	return keepState(
+		fmt.Sprintf(defaultThreeGGConfig, i), data)
+}
+
+func DisableThreeg(ctx *cli.Context) error {
+	if ctx.IsSet(configFlag) {
+		fmt.Println("WARN: config flag will be ignored when diable flag is used")
+	}
+	i := getInterface(ctx)
+	if i == "" {
+		return errors.New("missing imei, you must specify imei")
+	}
+	e, err := threeGState(i)
+	if err != nil {
+		return err
+	}
+	e.Enabled = false
+	data, err := json.Marshal(e)
+	if err != nil {
+		return err
+	}
+	service := "wvdial"
+	err = stopService(service)
+	if err != nil {
+		return err
+	}
+	err = disableService(service)
+	if err != nil {
+		return err
+	}
+	fmt.Println("successfully disabled 3G for ", i)
 	return keepState(
 		fmt.Sprintf(defaultThreeGGConfig, i), data)
 }
