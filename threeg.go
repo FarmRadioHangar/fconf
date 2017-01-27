@@ -74,9 +74,9 @@ func ThreegCMD(ctx *cli.Context) error {
 	if ctx.IsSet(disableFlag) {
 		return DisableThreeg(ctx)
 	}
-	//if ctx.IsSet(removeFlag) {
-	//return RemoveThreeg(ctx)
-	//}
+	if ctx.IsSet(removeFlag) {
+		return RemoveThreeg(ctx)
+	}
 	if ctx.IsSet(configFlag) {
 		return configThreegCMD(ctx)
 	}
@@ -222,4 +222,31 @@ func DisableThreeg(ctx *cli.Context) error {
 	fmt.Println("successfully disabled 3G for ", i)
 	return keepState(
 		fmt.Sprintf(defaultThreeGGConfig, i), data)
+}
+
+func RemoveThreeg(ctx *cli.Context) error {
+	err := DisableThreeg(ctx)
+	if err != nil {
+		return err
+	}
+	i := getInterface(ctx)
+	if i == "" {
+		return errors.New("missing imei, you must specify imei")
+	}
+
+	// removestate file
+	stateFile := filepath.Join(stateDir(),
+		fmt.Sprintf(defaultThreeGGConfig, i))
+	err = removeFile(stateFile)
+	if err != nil {
+		return err
+	}
+
+	// remove config
+	unit := filepath.Join(apConfigBase, threeGService)
+	err = removeFile(unit)
+	if err != nil {
+		return err
+	}
+	return nil
 }
