@@ -68,9 +68,9 @@ type ThreeGState struct {
 }
 
 func ThreegCMD(ctx *cli.Context) error {
-	//if ctx.IsSet(enableFlag) {
-	//return EnableThreeg(ctx)
-	//}
+	if ctx.IsSet(enableFlag) {
+		return EnableThreeg(ctx)
+	}
 	//if ctx.IsSet(disableFlag) {
 	//return DisableThreeg(ctx)
 	//}
@@ -133,6 +133,7 @@ func configThreegCMD(ctx *cli.Context) error {
 		state.Enabled = ms.Enabled
 	}
 	b, _ = json.Marshal(state)
+	setInterface(ctx, e.IMEI)
 	return keepState(
 		fmt.Sprintf(defaultThreeGGConfig, e.IMEI), b)
 }
@@ -156,4 +157,38 @@ func threeGState(i string) (*ThreeGState, error) {
 		return nil, ErrWrongStateFile
 	}
 	return f, nil
+}
+
+func EnableThreeg(ctx *cli.Context) error {
+	if ctx.IsSet(configFlag) {
+		err := configThreegCMD(ctx)
+		if err != nil {
+			return err
+		}
+	}
+	i := getInterface(ctx)
+	if i == "" {
+		return errors.New("missing imei , you must specify imei")
+	}
+	e, err := threeGState(i)
+	if err != nil {
+		return err
+	}
+	service := "wvdial"
+	err = restartService(service)
+	if err != nil {
+		return fmt.Errorf("ERROR: restarting systemd %v ", err)
+	}
+	err = enableService(service)
+	if err != nil {
+		return fmt.Errorf("ERROR: enabling systemd %v ", err)
+	}
+	e.Enabled = true
+	data, err := json.Marshal(e)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("successfully enabled 3g for %s \n", i)
+	return keepState(
+		fmt.Sprintf(defaultThreeGGConfig, i), data)
 }
