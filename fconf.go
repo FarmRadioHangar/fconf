@@ -8,6 +8,7 @@ import (
 	"net"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/coreos/go-systemd/unit"
 	"github.com/urfave/cli"
@@ -143,10 +144,23 @@ func ListInterface(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	b, err := json.Marshal(i)
+	var r []map[string]interface{}
+	for _, v := range i {
+		o := make(map[string]interface{})
+		o["Name"] = v.Name
+		o["MTU"] = v.MTU
+		o["HardwareAddr"] = v.HardwareAddr
+		o["Flags"] = getFlags(v.Flags)
+		r = append(r, o)
+	}
+	b, err := json.Marshal(r)
 	if err != nil {
 		return err
 	}
 	fmt.Println(string(b))
 	return nil
+}
+
+func getFlags(f net.Flags) []string {
+	return strings.Split(f.String(), "|")
 }
