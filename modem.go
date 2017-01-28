@@ -81,10 +81,7 @@ func setInterface(ctx *cli.Context, i string) {
 	ctx.GlobalSet("interface", i)
 }
 func RemoveFourg(ctx *cli.Context) error {
-	err := DisableFourg(ctx)
-	if err != nil {
-		return err
-	}
+
 	i := getInterface(ctx)
 	if i == "" {
 		return errors.New("missing interface, you must specify interface")
@@ -93,7 +90,12 @@ func RemoveFourg(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-
+	if f.Enabled {
+		err = DisableFourg(ctx)
+		if err != nil {
+			return err
+		}
+	}
 	// removestate file
 	stateFile := filepath.Join(stateDir(),
 		fmt.Sprintf(defaultFougGConfig, i))
@@ -106,7 +108,9 @@ func RemoveFourg(ctx *cli.Context) error {
 		fmt.Sprintf(fourgService, i))
 	err = removeFile(unit)
 	if err != nil {
-		return err
+		if !os.IsNotExist(err) {
+			return err
+		}
 	}
 
 	err = FlushInterface(f.Configg.Interface)

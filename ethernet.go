@@ -210,10 +210,6 @@ func DisableEthernet(ctx *cli.Context) error {
 
 //RemoveEthernet removes ethernet service.
 func RemoveEthernet(ctx *cli.Context) error {
-	err := DisableEthernet(ctx)
-	if err != nil {
-		return err
-	}
 	i := getInterface(ctx)
 	if i == "" {
 		return errors.New("missing interface, you must specify interface")
@@ -221,6 +217,12 @@ func RemoveEthernet(ctx *cli.Context) error {
 	e, err := ethernetState(i)
 	if err != nil {
 		return err
+	}
+	if e.Enabled {
+		err = DisableEthernet(ctx)
+		if err != nil {
+			return err
+		}
 	}
 	// removestate file
 	stateFile := filepath.Join(stateDir(),
@@ -233,10 +235,9 @@ func RemoveEthernet(ctx *cli.Context) error {
 	unit := filepath.Join(networkBase, ethernetService)
 	err = removeFile(unit)
 	if err != nil {
-		return err
-	}
-	if err != nil {
-		return err
+		if !os.IsNotExist(err) {
+			return err
+		}
 	}
 
 	// Flush settings for the interface

@@ -221,15 +221,21 @@ func DisableThreeg(ctx *cli.Context) error {
 }
 
 func RemoveThreeg(ctx *cli.Context) error {
-	err := DisableThreeg(ctx)
-	if err != nil {
-		return err
-	}
 	i := getInterface(ctx)
 	if i == "" {
 		return errors.New("missing imei, you must specify imei")
 	}
 
+	e, err := threeGState(i)
+	if err != nil {
+		return err
+	}
+	if e.Enabled {
+		err = DisableThreeg(ctx)
+		if err != nil {
+			return err
+		}
+	}
 	// removestate file
 	stateFile := filepath.Join(stateDir(),
 		fmt.Sprintf(defaultThreeGGConfig, i))
@@ -242,7 +248,9 @@ func RemoveThreeg(ctx *cli.Context) error {
 	unit := filepath.Join(apConfigBase, threeGService)
 	err = removeFile(unit)
 	if err != nil {
-		return err
+		if !os.IsNotExist(err) {
+			return err
+		}
 	}
 	return nil
 }

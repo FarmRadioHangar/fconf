@@ -241,12 +241,20 @@ func RemoveWifi(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
+	if w.Enabled {
+		err = DisableWifi(ctx)
+		if err != nil {
+			return err
+		}
+	}
 
 	// remove systemd file
 	unit := filepath.Join(networkBase, wirelessService)
 	err = removeFile(unit)
 	if err != nil {
-		return err
+		if !os.IsNotExist(err) {
+			return err
+		}
 	}
 	path := "/etc/wpa_supplicant/"
 	cname := "wpa_supplicant-" + w.Configg.Interface + ".conf"
@@ -254,11 +262,9 @@ func RemoveWifi(ctx *cli.Context) error {
 	// remove client connection
 	err = removeFile(filepath.Join(path, cname))
 	if err != nil {
-		return err
-	}
-	err = DisableWifi(ctx)
-	if err != nil {
-		return err
+		if !os.IsNotExist(err) {
+			return err
+		}
 	}
 
 	// Remove any interface settings

@@ -185,6 +185,12 @@ func RemoveApCMD(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
+	if a.Enabled {
+		err = DisableApCMD(ctx)
+		if err != nil {
+			return err
+		}
+	}
 	service := "create_ap"
 	err = stopService(service)
 	if err != nil {
@@ -203,5 +209,11 @@ func RemoveApCMD(ctx *cli.Context) error {
 	// remove the state file
 	stateFile := filepath.Join(stateDir(),
 		fmt.Sprintf(defaultAccessPointConfig, i))
-	return removeFile(stateFile)
+	err = removeFile(stateFile)
+	if err != nil {
+		if !os.IsNotExist(err) {
+			return err
+		}
+	}
+	return nil
 }
