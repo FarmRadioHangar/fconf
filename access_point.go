@@ -92,7 +92,6 @@ type AccessPointConfig struct {
 	Passphrase     string `json:"passphrase"`
 	Gateway        string `json:"gateway"`
 	ShareInterfaec string `json:"shared_interface"`
-	Enabled        bool   `json:"enabled"`
 }
 
 func (a *AccessPoint) Update(ap *AccessPointConfig) {

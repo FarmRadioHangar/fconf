@@ -5,6 +5,5 @@
 	"ssid": "voxbox",
 	"passphrase": "voxbox99",
 	"gateway": "192.168.12.1",
-	"shared_interface": "eth0",
-	"enabled": false
+	"shared_interface": "eth0"
 }
