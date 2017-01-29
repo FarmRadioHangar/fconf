@@ -81,7 +81,6 @@ func setInterface(ctx *cli.Context, i string) {
 	ctx.GlobalSet("interface", i)
 }
 func RemoveFourg(ctx *cli.Context) error {
-
 	i := getInterface(ctx)
 	if i == "" {
 		return errors.New("missing interface, you must specify interface")
@@ -186,7 +185,9 @@ func DisableFourg(ctx *cli.Context) error {
 		fmt.Sprintf(fourgService, e.Configg.Interface))
 	err = removeFile(unit)
 	if err != nil {
-		return err
+		if !os.IsNotExist(err) {
+			return err
+		}
 	}
 	fmt.Println("successfully disabled 4G")
 	e.Enabled = false
