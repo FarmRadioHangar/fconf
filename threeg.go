@@ -10,7 +10,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/urfave/cli"
 )
@@ -82,7 +81,6 @@ func ThreegCMD(ctx *cli.Context) error {
 
 func configThreegCMD(ctx *cli.Context) error {
 	base := ctx.String("dir")
-	name := ctx.String("name")
 	src := ctx.String("config")
 	if src == "" {
 		return errors.New("fconf: missing configuration source file")
@@ -109,20 +107,6 @@ func configThreegCMD(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	if strings.Contains(name, "%s") {
-		name = fmt.Sprintf(name, e.IMEI)
-	}
-	filename := filepath.Join(base, name)
-	var buf bytes.Buffer
-	err = e.WriteTo(&buf)
-	if err != nil {
-		return err
-	}
-	err = ioutil.WriteFile(filename, buf.Bytes(), 0644)
-	if err != nil {
-		return err
-	}
-	fmt.Printf("successful written 3G configuration to %s \n", filename)
 	state := &ThreeGState{Configg: &e}
 	ms, err := threeGState(e.IMEI)
 	if err == nil {
@@ -170,6 +154,21 @@ func EnableThreeg(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
+	name := filepath.Join(apConfigBase, threeGService)
+	_, err = os.Stat(name)
+	if err == nil {
+		return errors.New("you can not enable two 3g networks")
+	}
+	var buf bytes.Buffer
+	err = e.Configg.WriteTo(&buf)
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(name, buf.Bytes(), 0644)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("written 3g config to %s\n", name)
 	service := "wvdial"
 	err = restartService(service)
 	if err != nil {
