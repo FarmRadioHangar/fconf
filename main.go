@@ -13,6 +13,7 @@ const (
 	defaultAccessPointConfig = "access-point@%s.json"
 	defaultFougGConfig       = "4g-ndis@%s.json"
 	defaultThreeGGConfig     = "3g-ras@%s.json"
+	defaultVoiceChanConfig   = "voice-channel@%s.json"
 )
 
 func main() {
@@ -194,6 +195,30 @@ func main() {
 				},
 			},
 			Action: ApCMD,
+		},
+		{
+			Name:    "voice-channel",
+			Aliases: []string{"v"},
+			Usage:   "configures voice channel for 3g dongle",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "config",
+					Usage: "The path to the json configuration file",
+				},
+				cli.BoolFlag{
+					Name:  "enable",
+					Usage: "Enables access point",
+				},
+				cli.BoolFlag{
+					Name:  "disable",
+					Usage: "Disable access point",
+				},
+				cli.BoolFlag{
+					Name:  "remove",
+					Usage: "Remove access point",
+				},
+			},
+			Action: VoiceChannelCMD,
 		},
 		{
 			Name:    "list-interface",
