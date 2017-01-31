@@ -176,6 +176,7 @@ func DisableApCMD(ctx *cli.Context) error {
 	return keepState(
 		fmt.Sprintf(defaultAccessPointConfig, i), data)
 }
+
 func RemoveApCMD(ctx *cli.Context) error {
 	i := getInterface(ctx)
 	if i == "" {
@@ -191,16 +192,6 @@ func RemoveApCMD(ctx *cli.Context) error {
 			return err
 		}
 	}
-	service := "create_ap"
-	err = stopService(service)
-	if err != nil {
-		return err
-	}
-	err = disableService(service)
-	if err != nil {
-		return err
-	}
-
 	err = FlushInterface(a.Configg.Interface)
 	if err != nil {
 		return err
