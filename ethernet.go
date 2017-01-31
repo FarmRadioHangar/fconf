@@ -229,27 +229,7 @@ func RemoveEthernet(ctx *cli.Context) error {
 	// removestate file
 	stateFile := filepath.Join(stateDir(),
 		fmt.Sprintf(defaultEthernetConfig, i))
-	err = removeFile(stateFile)
-	if err != nil {
-		return err
-	}
-	// remove systemd file
-	unit := filepath.Join(networkBase, ethernetService)
-	err = removeFile(unit)
-	if err != nil {
-		if !os.IsNotExist(err) {
-			return err
-		}
-	}
-
-	// Flush settings for the interface
-	err = FlushInterface(e.Configg.Interface)
-	if err != nil {
-		return err
-	}
-
-	// reload systemd-networkd
-	return restartService("systemd-networkd")
+	return removeFile(stateFile)
 }
 
 func removeFile(name string) error {
