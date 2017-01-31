@@ -192,10 +192,6 @@ func RemoveApCMD(ctx *cli.Context) error {
 			return err
 		}
 	}
-	err = FlushInterface(a.Configg.Interface)
-	if err != nil {
-		return err
-	}
 
 	// remove the state file
 	stateFile := filepath.Join(stateDir(),

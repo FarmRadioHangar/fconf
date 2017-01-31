@@ -136,7 +136,7 @@ func ReadFromStdin() ([]byte, error) {
 }
 
 func FlushInterface(i string) error {
-	return exec.Command("ip", "addr", "flush", i).Run()
+	return exec.Command("ip", "addr", "dev", "flush", i).Run()
 }
 
 func ListInterface(ctx *cli.Context) error {

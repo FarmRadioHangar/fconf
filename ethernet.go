@@ -182,12 +182,14 @@ func DisableEthernet(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	_, err = exec.Command("ip", "addr", "flush", "dev", e.Configg.Interface).Output()
+	err = FlushInterface(e.Configg.Interface)
 	if err != nil {
 		return fmt.Errorf("ERROR: running ip addr flush dev %s %v",
 			e.Configg.Interface, err,
 		)
 	}
+
+	//remove unit file
 	unit := filepath.Join(networkBase,
 		fmt.Sprintf(ethernetService, e.Configg.Interface))
 	err = removeFile(unit)
