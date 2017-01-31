@@ -216,12 +216,14 @@ func DisableWifi(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	_, err = exec.Command("ip", "addr", "flush", "dev", w.Configg.Interface).Output()
+	err = FlushInterface(w.Configg.Interface)
 	if err != nil {
 		return fmt.Errorf("ERROR: running ip addr flush dev %s %v",
 			w.Configg.Interface, err,
 		)
 	}
+
+	// remove unit file
 	unit := filepath.Join(networkBase,
 		fmt.Sprintf(wirelessService, w.Configg.Interface))
 	err = removeFile(unit)
@@ -248,14 +250,6 @@ func RemoveWifi(ctx *cli.Context) error {
 		}
 	}
 
-	// remove systemd file
-	unit := filepath.Join(networkBase, wirelessService)
-	err = removeFile(unit)
-	if err != nil {
-		if !os.IsNotExist(err) {
-			return err
-		}
-	}
 	path := "/etc/wpa_supplicant/"
 	cname := "wpa_supplicant-" + w.Configg.Interface + ".conf"
 
@@ -265,12 +259,6 @@ func RemoveWifi(ctx *cli.Context) error {
 		if !os.IsNotExist(err) {
 			return err
 		}
-	}
-
-	// Remove any interface settings
-	err = FlushInterface(w.Configg.Interface)
-	if err != nil {
-		return err
 	}
 
 	// remove the state file
