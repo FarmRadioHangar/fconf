@@ -232,6 +232,10 @@ func main() {
 			Name:  "interface",
 			Usage: "the interface",
 		},
+		cli.IntFlag{
+			Name:  "pid",
+			Usage: "process id to send SIGHUP to",
+		},
 	}
 	err := app.Run(os.Args)
 	if err != nil {

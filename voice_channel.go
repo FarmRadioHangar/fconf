@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"syscall"
 
 	"github.com/urfave/cli"
 )
@@ -117,9 +118,12 @@ func EnableVoiceChan(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	return keepState(
+	err = keepState(
 		fmt.Sprintf(defaultVoiceChanConfig, w.Config.IMEI), data)
-
+	if err != nil {
+		return err
+	}
+	return notify(ctx)
 }
 
 func DisableVoiceChan(ctx *cli.Context) error {
@@ -136,9 +140,12 @@ func DisableVoiceChan(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	return keepState(
+	err = keepState(
 		fmt.Sprintf(defaultVoiceChanConfig, w.Config.IMEI), data)
-
+	if err != nil {
+		return err
+	}
+	return notify(ctx)
 }
 
 func RemoveVoiceChan(ctx *cli.Context) error {
@@ -159,5 +166,19 @@ func RemoveVoiceChan(ctx *cli.Context) error {
 		return err
 	}
 	name := filepath.Join(dir, fmt.Sprintf(defaultVoiceChanConfig, w.Config.IMEI))
-	return removeFile(name)
+	err = removeFile(name)
+	if err != nil {
+		return err
+	}
+	return notify(ctx)
+}
+
+func notify(ctx *cli.Context) error {
+	if ctx.GlobalIsSet("pid") {
+		pid := ctx.GlobalInt("pid")
+		fmt.Printf("sending SIGHUP to %d\n", pid)
+		return syscall.Kill(pid, syscall.SIGHUP)
+	}
+	return nil
+
 }
