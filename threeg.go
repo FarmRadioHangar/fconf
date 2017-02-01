@@ -113,9 +113,9 @@ func configThreegCMD(ctx *cli.Context) error {
 		state.Enabled = ms.Enabled
 	}
 	b, _ = json.Marshal(state)
-	setInterface(ctx, e.IMEI)
+	setInterface(ctx, e.IMSI)
 	return keepState(
-		fmt.Sprintf(defaultThreeGGConfig, e.IMEI), b)
+		fmt.Sprintf(defaultThreeGGConfig, e.IMSI), b)
 }
 
 func threeGState(i string) (*ThreeGState, error) {
