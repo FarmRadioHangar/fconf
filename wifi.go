@@ -213,19 +213,19 @@ func DisableWifi(ctx *cli.Context) error {
 			w.Configg.Interface, err,
 		)
 	}
+	// remove unit file
+	unit := filepath.Join(networkBase,
+		fmt.Sprintf(wirelessService, w.Configg.Interface))
+	err = removeFile(unit)
+	if err != nil {
+		return err
+	}
 	err = restartService("systemd-networkd")
 	if err != nil {
 		return err
 	}
 	w.Enabled = false
 	data, err := json.Marshal(w)
-	if err != nil {
-		return err
-	}
-	// remove unit file
-	unit := filepath.Join(networkBase,
-		fmt.Sprintf(wirelessService, w.Configg.Interface))
-	err = removeFile(unit)
 	if err != nil {
 		return err
 	}
