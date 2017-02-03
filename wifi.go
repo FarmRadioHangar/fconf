@@ -207,6 +207,12 @@ func DisableWifi(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
+	err = FlushInterface(w.Configg.Interface)
+	if err != nil {
+		return fmt.Errorf("ERROR: running ip addr flush dev %s %v",
+			w.Configg.Interface, err,
+		)
+	}
 	err = restartService("systemd-networkd")
 	if err != nil {
 		return err
@@ -216,13 +222,6 @@ func DisableWifi(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	err = FlushInterface(w.Configg.Interface)
-	if err != nil {
-		return fmt.Errorf("ERROR: running ip addr flush dev %s %v",
-			w.Configg.Interface, err,
-		)
-	}
-
 	// remove unit file
 	unit := filepath.Join(networkBase,
 		fmt.Sprintf(wirelessService, w.Configg.Interface))
