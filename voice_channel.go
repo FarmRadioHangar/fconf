@@ -17,8 +17,8 @@ type VoiceChannel struct {
 	IMSI   string `json:"imsi"`
 	Name   string `json:"name"`
 	Number string `json:"number"`
-	RxGain int    `json:"rx-gain"`
-	TxGain int    `json:"tx-gain"`
+	RxGain int    `json:"rx-gain,omitempty"`
+	TxGain int    `json:"tx-gain,omitempty"`
 	Label  string `json:"label"`
 }
 
@@ -67,14 +67,14 @@ func configVoice(ctx *cli.Context) error {
 		return err
 	}
 	state := &VoiceState{Config: &e}
-	ws, err := voiceChanState(e.IMEI)
+	ws, err := voiceChanState(e.IMSI)
 	if err == nil {
 		state.Enabled = ws.Enabled
 	}
 	b, _ = json.Marshal(state)
-	setInterface(ctx, e.IMEI)
+	setInterface(ctx, e.IMSI)
 	return keepState(
-		fmt.Sprintf(defaultVoiceChanConfig, e.IMEI), b)
+		fmt.Sprintf(defaultVoiceChanConfig, e.IMSI), b)
 }
 
 func voiceChanState(i string) (*VoiceState, error) {
