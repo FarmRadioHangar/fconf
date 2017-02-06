@@ -20,6 +20,8 @@ type VoiceChannel struct {
 	RxGain int    `json:"rx-gain,omitempty"`
 	TxGain int    `json:"tx-gain,omitempty"`
 	Label  string `json:"label"`
+	SMS    string `json:"sms_out"`
+	Calls  string `json:"calls_out"`
 }
 
 type VoiceState struct {
