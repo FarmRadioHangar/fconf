@@ -21,17 +21,23 @@ USAGE:
    fconf [global options] command [command options] [arguments...]
    
 VERSION:
-   0.3.2
+   0.4.8
    
 COMMANDS:
-     ethernet, e      configures ethernet with systemd
-     wifi-client, w   configures wifi client with systemd
-     access-point, a  configures access point with systemd
-     help, h          Shows a list of commands or help for one command
+     ethernet, e        configures ethernet with systemd
+     4g-ndis, 4g        configures 4G with systemd
+     3g-ras, 3g         configures 3G 
+     wifi-client, w     configures wifi client with systemd
+     access-point, a    configures access point with systemd
+     voice-channel, v   configures voice channel for 3g dongle
+     list-interface, i  prints a json array of all interfaces
+     help, h            Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --help, -h     show help
-   --version, -v  print the version
+   --interface value  the interface
+   --pid value        process id to send SIGHUP to (default: 0)
+   --help, -h         show help
+   --version, -v      print the version
    
 ```
 
