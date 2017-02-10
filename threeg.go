@@ -157,7 +157,9 @@ func EnableThreeg(ctx *cli.Context) error {
 	name := filepath.Join(apConfigBase, threeGService)
 	_, err = os.Stat(name)
 	if err == nil {
-		return errors.New("you can not enable two 3g networks")
+		if !e.Enabled {
+			return errors.New("you can not enable two 3g networks")
+		}
 	}
 	var buf bytes.Buffer
 	err = e.Configg.WriteTo(&buf)
@@ -211,6 +213,12 @@ func DisableThreeg(ctx *cli.Context) error {
 		return err
 	}
 	err = disableService(service)
+	if err != nil {
+		return err
+	}
+
+	name := filepath.Join(apConfigBase, threeGService)
+	err = removeFile(name)
 	if err != nil {
 		return err
 	}
