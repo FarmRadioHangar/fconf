@@ -143,7 +143,7 @@ func DisableVoiceChan(ctx *cli.Context) error {
 		return err
 	}
 	err = keepState(
-		fmt.Sprintf(defaultVoiceChanConfig, w.Config.IMEI), data)
+		fmt.Sprintf(defaultVoiceChanConfig, w.Config.IMSI), data)
 	if err != nil {
 		return err
 	}
