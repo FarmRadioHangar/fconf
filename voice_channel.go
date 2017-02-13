@@ -13,7 +13,6 @@ import (
 )
 
 type VoiceChannel struct {
-	IMEI   string `json:"imei"`
 	IMSI   string `json:"imsi"`
 	Name   string `json:"name"`
 	Number string `json:"number"`
@@ -109,7 +108,7 @@ func EnableVoiceChan(ctx *cli.Context) error {
 	}
 	i := getInterface(ctx)
 	if i == "" {
-		return errors.New("missing imei , you must specify imei")
+		return errors.New("missing imSi , you must specify imsi")
 	}
 	w, err := voiceChanState(i)
 	if err != nil {
@@ -121,7 +120,7 @@ func EnableVoiceChan(ctx *cli.Context) error {
 		return err
 	}
 	err = keepState(
-		fmt.Sprintf(defaultVoiceChanConfig, w.Config.IMEI), data)
+		fmt.Sprintf(defaultVoiceChanConfig, w.Config.IMSI), data)
 	if err != nil {
 		return err
 	}
@@ -131,7 +130,7 @@ func EnableVoiceChan(ctx *cli.Context) error {
 func DisableVoiceChan(ctx *cli.Context) error {
 	i := getInterface(ctx)
 	if i == "" {
-		return errors.New("missing imei , you must specify imei")
+		return errors.New("missing imsi , you must specify imsi")
 	}
 	w, err := voiceChanState(i)
 	if err != nil {
@@ -153,7 +152,7 @@ func DisableVoiceChan(ctx *cli.Context) error {
 func RemoveVoiceChan(ctx *cli.Context) error {
 	i := getInterface(ctx)
 	if i == "" {
-		return errors.New("missing imei , you must specify imei")
+		return errors.New("missing imsi , you must specify imsi")
 	}
 	w, err := voiceChanState(i)
 	if err != nil {
@@ -167,7 +166,7 @@ func RemoveVoiceChan(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	name := filepath.Join(dir, fmt.Sprintf(defaultVoiceChanConfig, w.Config.IMEI))
+	name := filepath.Join(dir, fmt.Sprintf(defaultVoiceChanConfig, w.Config.IMSI))
 	err = removeFile(name)
 	if err != nil {
 		return err
