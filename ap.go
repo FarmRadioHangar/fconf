@@ -129,7 +129,7 @@ func EnableApCMD(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	service := "create_ap"
+	service := "create_ap@" + i
 	err = startService(service)
 	if err != nil {
 		return err
@@ -159,7 +159,7 @@ func DisableApCMD(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	service := "create_ap"
+	service := "create_ap@" + i
 	err = stopService(service)
 	if err != nil {
 		return err
